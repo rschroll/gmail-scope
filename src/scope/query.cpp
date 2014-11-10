@@ -10,6 +10,8 @@
 #include <unity/scopes/SearchReply.h>
 #include <unity/scopes/OnlineAccountClient.h>
 
+#include <QRegularExpression>
+
 #include <iomanip>
 #include <sstream>
 
@@ -47,6 +49,38 @@ const static string MESSAGE_TEMPLATE =
         }
         )";
 
+const static string THREADED_TEMPLATE =
+        R"(
+{
+        "schema-version": 1,
+        "template": {
+        "category-layout": "vertical-journal",
+        "card-layout": "horizontal",
+        "card-size": "38"
+        },
+        "components": {
+        "title": "title",
+        "subtitle": "snippet",
+        "mascot": "gravatar",
+        "attributes": [{
+        "value": "date"
+        }]
+        }
+        }
+        )";
+
+namespace {
+
+static std::string trim_subject(const std::string line) {
+    QRegularExpression regex("^ *(?:(?:fwd|re):? *)*(.*?) *$",
+                             QRegularExpression::CaseInsensitiveOption);
+    QRegularExpressionMatch match = regex.match(line.c_str());
+    if (match.hasMatch())
+        return match.captured(1).toStdString();
+    return line;
+}
+}
+
 Query::Query(const sc::CannedQuery &query, const sc::SearchMetadata &metadata,
              Config::Ptr config) :
     sc::SearchQueryBase(query, metadata), client_(config) {
@@ -60,6 +94,7 @@ bool Query::init_scope(sc::SearchReplyProxy const& reply) {
     sc::VariantMap config = settings();
     if (config.empty())
         cerr << "No config!" << endl;
+    thread_messages = config["threading"].get_bool();
     show_snippets = config["snippets"].get_bool();
 
     sc::OnlineAccountClient oa_client(SCOPE_NAME, "email", "google");
@@ -97,16 +132,23 @@ void Query::run(sc::SearchReplyProxy const& reply) {
             messages = client_.messages_list(query_string);
         }
 
-        // Register a category for the current weather, with the title we just built
-        auto location_cat = reply->register_category("messages", "", "",
-                                                     sc::CategoryRenderer(MESSAGE_TEMPLATE));
+        auto single_cat = reply->register_category("messages", "", "",
+                                                   sc::CategoryRenderer(MESSAGE_TEMPLATE));
+        std::map<std::string,sc::Category::SCPtr> categories;
 
         for (const Client::Email message : messages){
             // Find out more
             Client::Email message_full = client_.messages_get(message.id, false);
-
-            // Create a single result for the current weather category
-            sc::CategorisedResult res(location_cat);
+            sc::Category::SCPtr cat = single_cat;
+            if (thread_messages) {
+                if (categories[message_full.threadId] == NULL)
+                    categories[message_full.threadId] =
+                            reply->register_category(message_full.threadId,
+                                                     trim_subject(message_full.header.subject), "",
+                                                     sc::CategoryRenderer(THREADED_TEMPLATE));
+                cat = categories[message_full.threadId];
+            }
+            sc::CategorisedResult res(cat);
 
             // We must have a URI
             res.set_uri("gmail://" + message_full.id);

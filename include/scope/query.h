@@ -29,6 +29,7 @@ public:
 private:
     bool init_scope(const unity::scopes::SearchReplyProxy &reply);
 
+    bool thread_messages;
     bool show_snippets;
     api::Client client_;
 };

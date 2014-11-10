@@ -27,6 +27,9 @@ public:
     void run(const unity::scopes::SearchReplyProxy &reply) override;
 
 private:
+    bool init_scope(const unity::scopes::SearchReplyProxy &reply);
+
+    bool show_snippets;
     api::Client client_;
 };
 

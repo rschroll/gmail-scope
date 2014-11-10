@@ -56,11 +56,13 @@ void Query::cancelled() {
     client_.cancel();
 }
 
+bool Query::init_scope(sc::SearchReplyProxy const& reply) {
+    sc::VariantMap config = settings();
+    if (config.empty())
+        cerr << "No config!" << endl;
+    show_snippets = config["snippets"].get_bool();
 
-void Query::run(sc::SearchReplyProxy const& reply) {
-
-    unity::scopes::OnlineAccountClient oa_client(SCOPE_NAME, "email", "google");
-
+    sc::OnlineAccountClient oa_client(SCOPE_NAME, "email", "google");
     if (!client_.authenticated(oa_client)) {
         auto cat = reply->register_category("gmail_login", "", "");
         sc::CategorisedResult res(cat);
@@ -70,8 +72,14 @@ void Query::run(sc::SearchReplyProxy const& reply) {
                                               sc::OnlineAccountClient::InvalidateResults,
                                               sc::OnlineAccountClient::DoNothing);
         reply->push(res);
-        return;
+        return false;
     }
+    return true;
+}
+
+void Query::run(sc::SearchReplyProxy const& reply) {
+    if (!init_scope(reply))
+        return;
 
     try {
         // Start by getting information about the query
@@ -105,7 +113,8 @@ void Query::run(sc::SearchReplyProxy const& reply) {
             res.set_title(message_full.header.from.name + "   (" + message_full.header.date + ")");
             res["subject"] = message_full.header.subject;
             res["date"] = message_full.header.date;
-            res["snippet"] = message_full.snippet;
+            if (show_snippets)
+                res["snippet"] = message_full.snippet;
             res["gravatar"] = message_full.header.from.gravatar;
 
             // Push the result

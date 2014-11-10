@@ -1,0 +1,17 @@
+{
+    "architecture": "@CLICK_ARCH@",
+    "description": "A simple Unity scope that accesses the network",
+    "framework": "ubuntu-sdk-14.10-dev2",
+    "hooks": {
+        "gmail": {
+            "apparmor": "gmail.apparmor",
+            "scope": "gmail",
+            "account-application": "gmail.application",
+            "account-service": "gmail.service"
+        }
+    },
+    "maintainer": "Robert Schroll <rschroll@gmail.com>",
+    "name": "com.ubuntu.developer.rschroll.gmail",
+    "title": "gmail",
+    "version": "0.1"
+}

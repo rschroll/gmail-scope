@@ -41,7 +41,7 @@ static QString parse_time(QString input) {
 static Client::Contact parse_contact(const QString &contact_string) {
     Client::Contact contact;
     QString address;
-    QRegularExpression regex("(.*) <(.*)>");
+    QRegularExpression regex("\"?(.*?)\"? <(.*)>");
     QRegularExpressionMatch match = regex.match(contact_string);
     if (match.hasMatch()) {
         contact.name = match.captured(1).toStdString();

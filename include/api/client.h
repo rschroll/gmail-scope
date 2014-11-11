@@ -16,6 +16,8 @@
 
 namespace api {
 
+const std::string TIME_FMT = "MMMM d, yyyy HH:mm";
+
 /**
  * Provide a nice way to access the HTTP API.
  *

@@ -28,14 +28,7 @@ static QString parse_time(QString input) {
     QDateTime email = QDateTime::fromString(input, Qt::RFC2822Date).toLocalTime();
     if (!email.isValid())
         return input;
-    QDateTime now = QDateTime::currentDateTime();
-    if (now.date() == email.date())
-        return email.toString("HH:mm");
-    if (email.daysTo(now) < 7)
-        return email.toString("dddd");
-    if (email.daysTo(now) < 365)
-        return email.toString("MMM d");
-    return email.toString("MMM d, yyyy");
+    return email.toString(TIME_FMT.c_str());
 }
 
 static Client::Contact parse_contact(const QString &contact_string) {

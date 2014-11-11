@@ -10,6 +10,7 @@
 #include <unity/scopes/SearchReply.h>
 #include <unity/scopes/OnlineAccountClient.h>
 
+#include <QDateTime>
 #include <QRegularExpression>
 
 #include <iomanip>
@@ -43,7 +44,7 @@ const static string MESSAGE_TEMPLATE =
         "summary": "snippet",
         "mascot": "gravatar",
         "attributes": [{
-        "value": "date"
+        "value": "short date"
         }]
         }
         }
@@ -63,7 +64,7 @@ const static string THREADED_TEMPLATE =
         "subtitle": "snippet",
         "mascot": "gravatar",
         "attributes": [{
-        "value": "date"
+        "value": "short date"
         }]
         }
         }
@@ -78,6 +79,32 @@ static std::string trim_subject(const std::string line) {
     if (match.hasMatch())
         return match.captured(1).toStdString();
     return line;
+}
+
+static std::string short_date(std::string input) {
+    QDateTime email = QDateTime::fromString(input.c_str(), TIME_FMT.c_str());
+    if (!email.isValid())
+        return input;
+    QDateTime now = QDateTime::currentDateTime();
+    if (now.date() == email.date())
+        return email.toString("HH:mm").toStdString();
+    if (email.daysTo(now) < 7)
+        return email.toString("dddd").toStdString();
+    if (email.daysTo(now) < 365)
+        return email.toString("MMM d").toStdString();
+    return email.toString("MMM d, yyyy").toStdString();
+}
+
+static std::string contacts_line(Client::ContactList contacts) {
+    stringstream ss;
+    bool multiple = false;
+    for (const Client::Contact c : contacts) {
+        if (multiple)
+            ss << ", ";
+        ss << c.name;
+        multiple = true;
+    }
+    return ss.str();
 }
 }
 
@@ -152,12 +179,24 @@ void Query::run(sc::SearchReplyProxy const& reply) {
 
             // We must have a URI
             res.set_uri("gmail://" + message_full.id);
-            res.set_title(message_full.header.from.name + "   (" + message_full.header.date + ")");
+            std::string short_ = short_date(message_full.header.date);
+            res.set_title(message_full.header.from.name + "   (" + short_ + ")");
             res["subject"] = message_full.header.subject;
             res["date"] = message_full.header.date;
+            res["short date"] = short_;
             if (show_snippets)
                 res["snippet"] = message_full.snippet;
             res["gravatar"] = message_full.header.from.gravatar;
+
+            stringstream ss;
+            ss << "<strong>From:</strong> " << message_full.header.from.name << "<br>";
+            std::string to_line = contacts_line(message_full.header.to);
+            if (to_line.length())
+                ss << "<strong>To:</strong> " << to_line << "<br>";
+            std::string cc_line = contacts_line(message_full.header.cc);
+            if (cc_line.length())
+                ss << "<strong>Cc:</strong> " << cc_line << "<br>";
+            res["recipients"] = ss.str();
 
             // Push the result
             if (!reply->push(res)) {

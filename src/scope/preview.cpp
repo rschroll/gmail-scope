@@ -21,41 +21,23 @@ void Preview::cancelled() {
 }
 
 void Preview::run(sc::PreviewReplyProxy const& reply) {
-    // Support three different column layouts
-    sc::ColumnLayout layout1col(1), layout2col(2), layout3col(3);
-
-    // Single column layout
-    layout1col.add_column( { "image", "header", "summary" });
-
-    // Two column layout
-    layout2col.add_column( { "image" });
-    layout2col.add_column( { "header", "summary" });
-
-    // Three cokumn layout
-    layout3col.add_column( { "image" });
-    layout3col.add_column( { "header", "summary" });
-    layout3col.add_column( { });
-
-    // Register the layouts we just created
-    reply->register_layout( { layout1col, layout2col, layout3col });
+    sc::ColumnLayout layout1col(1);
+    layout1col.add_column( { "header", "recipients" });
+    reply->register_layout( { layout1col });
 
     // Define the header section
     sc::PreviewWidget header("header", "header");
     // It has title and a subtitle properties
-    header.add_attribute_mapping("title", "title");
-    header.add_attribute_mapping("subtitle", "subtitle");
-
-    // Define the image section
-    sc::PreviewWidget image("image", "image");
-    // It has a single source property, mapped to the result's art property
-    image.add_attribute_mapping("source", "art");
+    header.add_attribute_mapping("title", "subject");
+    header.add_attribute_mapping("subtitle", "date");
+    header.add_attribute_mapping("mascot", "gravatar");
 
     // Define the summary section
-    sc::PreviewWidget description("summary", "text");
+    sc::PreviewWidget recipients("recipients", "text");
     // It has a text property, mapped to the result's description property
-    description.add_attribute_mapping("text", "description");
+    recipients.add_attribute_mapping("text", "recipients");
 
     // Push each of the sections
-    reply->push( { image, header, description });
+    reply->push( { header, recipients });
 }
 

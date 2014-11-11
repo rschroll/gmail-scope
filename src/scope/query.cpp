@@ -179,6 +179,7 @@ void Query::run(sc::SearchReplyProxy const& reply) {
 
             // We must have a URI
             res.set_uri("gmail://" + message_full.id);
+            res["id"] = message_full.id;
             std::string short_ = short_date(message_full.header.date);
             res.set_title(message_full.header.from.name + "   (" + short_ + ")");
             res["subject"] = message_full.header.subject;
@@ -189,13 +190,13 @@ void Query::run(sc::SearchReplyProxy const& reply) {
             res["gravatar"] = message_full.header.from.gravatar;
 
             stringstream ss;
-            ss << "<strong>From:</strong> " << message_full.header.from.name << "<br>";
+            ss << "<strong>From:</strong> " << message_full.header.from.name;
             std::string to_line = contacts_line(message_full.header.to);
             if (to_line.length())
-                ss << "<strong>To:</strong> " << to_line << "<br>";
+                ss << "<br><strong>To:</strong> " << to_line;
             std::string cc_line = contacts_line(message_full.header.cc);
             if (cc_line.length())
-                ss << "<strong>Cc:</strong> " << cc_line << "<br>";
+                ss << "<br><strong>Cc:</strong> " << cc_line;
             res["recipients"] = ss.str();
 
             // Push the result

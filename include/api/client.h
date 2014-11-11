@@ -50,6 +50,7 @@ public:
         std::string threadId;
         std::string snippet;
         Header header;
+        std::string body;
     };
 
     /**
@@ -68,7 +69,7 @@ public:
      */
     virtual EmailList messages_list(const std::string &query);
 
-    virtual Email messages_get(const std::string &id, bool full);
+    virtual Email messages_get(const std::string &id, bool body);
 
     /**
      * Cancel any pending queries (this method can be called from a different thread)

@@ -79,6 +79,26 @@ static Client::Header parse_header(const QVariant &headers) {
     return header;
 }
 
+static std::string decode(const QVariant &encoded) {
+    return std::string(QByteArray::fromBase64(encoded.toByteArray().replace("-", "+")
+                                              .replace("_", "/")).constData());
+}
+
+static std::string parse_payload(const QVariant &p) {
+    QVariantMap payload = p.toMap();
+    if (payload["mimeType"].toString().startsWith("multipart")) {
+        QVariantList parts = payload["parts"].toList();
+        for (const QVariant &part : parts) {
+            std::string body = parse_payload(part);
+            if (body != "")
+                return body;
+        }
+    } else if (payload["mimeType"] == "text/plain") {
+        return decode(payload["body"].toMap()["data"]);
+    }
+    return "";
+}
+
 static Client::Email parse_email(const QVariant &i) {
     QVariantMap item = i.toMap();
     Client::Email message;
@@ -86,6 +106,7 @@ static Client::Email parse_email(const QVariant &i) {
     message.threadId = item["threadId"].toString().toStdString();
     message.snippet = unescape(item["snippet"].toString()).toStdString();
     message.header = parse_header(item["payload"].toMap()["headers"]);
+    message.body = parse_payload(item["payload"]);
     return message;
 }
 }
@@ -168,11 +189,11 @@ Client::EmailList Client::messages_list(const string& query) {
     return result;
 }
 
-Client::Email Client::messages_get(const string& id, bool full = false) {
+Client::Email Client::messages_get(const string& id, bool body = false) {
     QJsonDocument root;
     net::Uri::QueryParameters params;
-    if (full) {
-        params = { { "format", "full" } };
+    if (body) {
+        params = { { "format", "full" }, { "fields", "payload" } };
     } else {
         params = { { "format", "metadata" } };
         for (string header : { "Date", "From", "To", "Cc", "Subject" })

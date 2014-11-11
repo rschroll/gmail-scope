@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <service id="@SCOPE_INSTALL_NAME@">
-  <type>email</type>
-  <icon>gmail</icon>
-  <name>GMail</name>
+  <type>@SCOPE_INSTALL_NAME@</type>
+  <name>Gmail</name>
   <provider>google</provider>
   <translations>gmail-scope</translations>
   <template>
@@ -11,16 +10,9 @@
       <setting name="mechanism">web_server</setting>
       <group name="oauth2">
         <group name="web_server">
-          <setting name="Host">accounts.google.com</setting>
-
-          <setting name="AuthPath">o/oauth2/auth?access_type=offline</setting>
-          <setting name="TokenPath">o/oauth2/token</setting>
-          <setting name="RedirectUri">https://wiki.ubuntu.com/</setting>
-          <setting name="ResponseType">code</setting>
           <setting type="as" name="Scope">['https://www.googleapis.com/auth/gmail.readonly']</setting>
           <setting name="ClientId">@CLIENT_ID@</setting>
           <setting name="ClientSecret">@CLIENT_SECRET@</setting>
-          <setting type="as" name="AllowedSchemes">['https','http']</setting>
         </group>
       </group>
     </group>

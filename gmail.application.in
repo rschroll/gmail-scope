@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <application id="@SCOPE_INSTALL_NAME@">
-  <description>GMail</description>
-  <desktop-entry>@SCOPE_INSTALL_NAME@.desktop</desktop-entry>
   <services>
     <service id="@SCOPE_INSTALL_NAME@">
-      <description>View your GMail as a scope</description>
+      <description>View your Gmail as a scope</description>
     </service>
   </services>
 </application>

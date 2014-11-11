@@ -83,8 +83,33 @@ static std::string decode(const QVariant &encoded) {
     // There is an alternate encoding of "62" and "63".
     QByteArray decoded = QByteArray::fromBase64(encoded.toByteArray().replace("-", "+")
                                                 .replace("_", "/"));
-    // Basic flowed text support.
-    return std::string(decoded.replace("\n-- \r\n", "\n-- \n").replace(" \r\n", " ").constData());
+    QList<QByteArray> lines = decoded.replace("\r\n", "\n").split('\n');
+    stringstream ss;
+    bool continued = false;
+    int quote_level = 0;
+    const std::string colors[] = { "#9a5d9a", "#7474a7", "#3f8c8c", "#4c914c", "#818115", "#9f6666" };
+    for (QByteArray &line : lines) {
+        int i = 0;
+        while (i < line.length() && line.at(i) == '>')
+            i += 1;
+        if (continued && quote_level != i)
+            ss << "<br>";
+        while (quote_level < i) {
+            ss << "<font color='" << colors[quote_level % 6] << "'>";
+            quote_level += 1;
+        }
+        while (quote_level > i) {
+            ss << "</font>";
+            quote_level -= 1;
+        }
+        if (i < line.length() && line.at(i) == ' ')
+            i += 1;
+        ss << line.remove(0, i).constData();
+        continued = (line.endsWith(" ") && line != "-- ");
+        if (!continued)
+            ss << "<br>";
+    }
+    return ss.str();
 }
 
 static std::string parse_payload(const QVariant &p) {

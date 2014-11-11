@@ -80,8 +80,11 @@ static Client::Header parse_header(const QVariant &headers) {
 }
 
 static std::string decode(const QVariant &encoded) {
-    return std::string(QByteArray::fromBase64(encoded.toByteArray().replace("-", "+")
-                                              .replace("_", "/")).constData());
+    // There is an alternate encoding of "62" and "63".
+    QByteArray decoded = QByteArray::fromBase64(encoded.toByteArray().replace("-", "+")
+                                                .replace("_", "/"));
+    // Basic flowed text support.
+    return std::string(decoded.replace("\n-- \r\n", "\n-- \n").replace(" \r\n", " ").constData());
 }
 
 static std::string parse_payload(const QVariant &p) {

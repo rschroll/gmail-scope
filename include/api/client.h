@@ -42,6 +42,8 @@ public:
         std::string subject;
     };
 
+    typedef std::deque<std::string> Labels;
+
     /**
      * Information about an email
      */
@@ -51,6 +53,7 @@ public:
         std::string snippet;
         Header header;
         std::string body;
+        Labels labels;
     };
 
     /**

@@ -127,6 +127,14 @@ static std::string parse_payload(const QVariant &p) {
     return "";
 }
 
+static Client::Labels parse_labels(const QVariant &l) {
+    QVariantList labelids = l.toList();
+    Client::Labels labels;
+    for (const QVariant &i : labelids)
+        labels.emplace_back(i.toString().toStdString());
+    return labels;
+}
+
 static Client::Email parse_email(const QVariant &i) {
     QVariantMap item = i.toMap();
     Client::Email message;
@@ -135,6 +143,7 @@ static Client::Email parse_email(const QVariant &i) {
     message.snippet = unescape(item["snippet"].toString()).toStdString();
     message.header = parse_header(item["payload"].toMap()["headers"]);
     message.body = parse_payload(item["payload"]);
+    message.labels = parse_labels(item["labelIds"]);
     return message;
 }
 }

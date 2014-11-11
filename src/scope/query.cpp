@@ -180,11 +180,25 @@ void Query::run(sc::SearchReplyProxy const& reply) {
             // We must have a URI
             res.set_uri("gmail://" + message_full.id);
             res["id"] = message_full.id;
-            std::string short_ = short_date(message_full.header.date);
-            res.set_title(message_full.header.from.name + "   (" + short_ + ")");
+            bool unread = false;
+            for (const std::string &label : message_full.labels) {
+                if (label == "UNREAD") {
+                    unread = true;
+                    break;
+                }
+            }
+            std::string shortened = short_date(message_full.header.date);
+            stringstream title;
+            if (unread)
+                title << "<font color='black'>";
+            title << message_full.header.from.name << "   (" << shortened << ")";
+            if (unread)
+                title << "</font>";
+            res.set_title(title.str());
+
             res["subject"] = message_full.header.subject;
             res["date"] = message_full.header.date;
-            res["short date"] = short_;
+            res["short date"] = shortened;
             if (show_snippets)
                 res["snippet"] = message_full.snippet;
             res["gravatar"] = message_full.header.from.gravatar;

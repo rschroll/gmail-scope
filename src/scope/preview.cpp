@@ -24,9 +24,11 @@ void Preview::cancelled() {
 
 void Preview::run(sc::PreviewReplyProxy const& reply) {
     sc::Result res = result();
-    sc::ColumnLayout layout1col(1);
+    sc::ColumnLayout layout1col(1), layout2col(2);
     layout1col.add_column( { "header", "recipients", "body", "search header", "searches" });
-    reply->register_layout( { layout1col });
+    layout2col.add_column( { "header", "recipients", "body" });
+    layout2col.add_column( { "search header", "searches" });
+    reply->register_layout( { layout1col, layout2col });
 
     // Define the header section
     sc::PreviewWidget header("header", "header");

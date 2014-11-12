@@ -67,6 +67,23 @@ const static string THREADED_TEMPLATE =
         }
         )";
 
+const static string LOGIN_TEMPLATE =
+        R"(
+{
+        "schema-version": 1,
+        "template": {
+        "category-layout": "grid",
+        "card-layout": "vertical",
+        "card-size": "large",
+        "card-background": "color:///white"
+        },
+        "components": {
+        "title": "title",
+        "mascot": "art"
+        }
+        }
+        )";
+
 namespace {
 
 static std::string trim_subject(const std::string line) {
@@ -128,9 +145,11 @@ bool Query::init_scope(sc::SearchReplyProxy const& reply) {
 
     sc::OnlineAccountClient oa_client(SCOPE_NAME, "email", "google");
     if (!client_.authenticated(oa_client)) {
-        auto cat = reply->register_category("gmail_login", "", "");
+        auto cat = reply->register_category("gmail_login", "", "",
+                                            sc::CategoryRenderer(LOGIN_TEMPLATE));
         sc::CategorisedResult res(cat);
-        res.set_title("Log in");
+        res.set_title("Log in with Google");
+        res.set_art("file:///usr/share/icons/suru/apps/scalable/googleplus-symbolic.svg");
 
         oa_client.register_account_login_item(res, query(),
                                               sc::OnlineAccountClient::InvalidateResults,

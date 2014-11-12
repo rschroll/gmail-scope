@@ -1,3 +1,9 @@
+/* Copyright 2014 Robert Schroll
+ *
+ * This file is part of Gmail Scope and is distributed under the terms of
+ * the GPL. See the file LICENSE for full details.
+ */
+
 #include <scope/preview.h>
 #include <api/client.h>
 

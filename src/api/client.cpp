@@ -146,6 +146,13 @@ static Client::Email parse_email(const QVariant &i) {
     message.labels = parse_labels(item["labelIds"]);
     return message;
 }
+
+static net::Uri::QueryParameters metadata_params() {
+    net::Uri::QueryParameters params = { { "format", "metadata" } };
+    for (string header : { "Date", "From", "To", "Cc", "Subject" })
+        params.emplace_back("metadataHeaders", header);
+    return params;
+}
 }
 
 Client::Client(Config::Ptr config) :
@@ -232,14 +239,26 @@ Client::Email Client::messages_get(const string& id, bool body = false) {
     if (body) {
         params = { { "format", "full" }, { "fields", "payload" } };
     } else {
-        params = { { "format", "metadata" } };
-        for (string header : { "Date", "From", "To", "Cc", "Subject" })
-            params.emplace_back("metadataHeaders", header);
+        params = metadata_params();
     }
     get({ "users", "me", "messages", id}, params, root);
 
     QVariant message = root.toVariant();
     return parse_email(message);
+}
+
+Client::EmailList Client::threads_get(const string& id) {
+    QJsonDocument root;
+    get({ "users", "me", "threads", id }, metadata_params(), root);
+
+    EmailList result;
+    QVariantMap variant = root.toVariant().toMap();
+    QVariantList messages = variant["messages"].toList();
+
+    for (const QVariant &i : messages) {
+        result.emplace_back(parse_email(i));
+    }
+    return result;
 }
 
 bool Client::authenticated(unity::scopes::OnlineAccountClient& oa_client) {

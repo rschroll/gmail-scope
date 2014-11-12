@@ -74,6 +74,8 @@ public:
 
     virtual Email messages_get(const std::string &id, bool body);
 
+    virtual EmailList threads_get(const std::string& id);
+
     /**
      * Cancel any pending queries (this method can be called from a different thread)
      */

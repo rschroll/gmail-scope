@@ -169,14 +169,18 @@ void Query::run(sc::SearchReplyProxy const& reply) {
         const sc::CannedQuery &query(sc::SearchQueryBase::query());
 
         // Trim the query string of whitespace
-        string query_string = alg::trim_copy(query.query_string());
+        std::string query_string = alg::trim_copy(query.query_string());
+        std::string prefix = "";
+        size_t sep = query_string.find(':');
+        if (sep != std::string::npos) {
+            prefix = query_string.substr(0, sep);
+        }
 
         Client::EmailList messages;
-        if (query_string.empty()) {
-            // If the string is empty, get the current weather for London
-            messages = client_.messages_list("");
+        if (prefix == "threadid") {
+            messages = client_.threads_get(query_string.substr(sep+1, std::string::npos));
+            thread_messages = true;
         } else {
-            // otherwise, get the current weather for the search string
             messages = client_.messages_list(query_string);
         }
 
@@ -185,8 +189,13 @@ void Query::run(sc::SearchReplyProxy const& reply) {
         std::map<std::string,sc::Category::SCPtr> categories;
 
         for (const Client::Email message : messages){
-            // Find out more
-            Client::Email message_full = client_.messages_get(message.id, false);
+            // Threads already include full messages, searches don't
+            Client::Email message_full;
+            if (message.snippet != "")
+                message_full = message;
+            else
+                message_full = client_.messages_get(message.id, false);
+
             sc::Category::SCPtr cat = single_cat;
             if (thread_messages) {
                 if (categories[message_full.threadId] == NULL)
@@ -222,6 +231,10 @@ void Query::run(sc::SearchReplyProxy const& reply) {
                 res["snippet"] = message_full.snippet;
             res["gravatar"] = message_full.header.from.gravatar;
             res["emblem"] = create_emblem(message_full.header.date, unread ? "black" : "#7a7a7a");
+
+            res["from name"] = message_full.header.from.name;
+            res["from email"] = message_full.header.from.address;
+            res["threadid"] = message_full.threadId;
 
             stringstream ss;
             ss << "<strong>From:</strong> " << message_full.header.from.name;

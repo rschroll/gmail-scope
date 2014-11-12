@@ -23,8 +23,9 @@ void Preview::cancelled() {
 }
 
 void Preview::run(sc::PreviewReplyProxy const& reply) {
+    sc::Result res = result();
     sc::ColumnLayout layout1col(1);
-    layout1col.add_column( { "header", "recipients", "body" });
+    layout1col.add_column( { "header", "recipients", "body", "search header", "searches" });
     reply->register_layout( { layout1col });
 
     // Define the header section
@@ -39,8 +40,24 @@ void Preview::run(sc::PreviewReplyProxy const& reply) {
     // It has a text property, mapped to the result's description property
     recipients.add_attribute_mapping("text", "recipients");
 
+    // Search actions
+    sc::PreviewWidget search_header("search header", "header");
+    search_header.add_attribute_value("title", sc::Variant("Find messages"));
+
+    sc::PreviewWidget searches("searches", "actions");
+    sc::VariantBuilder builder;
+    sc::CannedQuery from_query(SCOPE_NAME, "from:" + res["from email"].get_string(), "");
+    builder.add_tuple({ { "id", sc::Variant("search from") },
+                        { "label", sc::Variant("From " + res["from name"].get_string()) },
+                        { "uri", sc::Variant(from_query.to_uri()) } });
+    sc::CannedQuery thread_query(SCOPE_NAME, "threadid:" + res["threadid"].get_string(), "");
+    builder.add_tuple({ { "id", sc::Variant("search thread") },
+                        { "label", sc::Variant("In thread") },
+                        { "uri", sc::Variant(thread_query.to_uri()) } });
+    searches.add_attribute_value("actions", builder.end());
+
     // Push each of the sections
-    reply->push( { header, recipients });
+    reply->push( { header, recipients, search_header, searches });
 
     // Get the body
     api::Client::Email message = client_.messages_get(result()["id"].get_string(), true);

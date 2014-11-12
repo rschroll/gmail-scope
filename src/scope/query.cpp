@@ -2,6 +2,7 @@
 
 #include <scope/localization.h>
 #include <scope/query.h>
+#include <scope/svg.h>
 
 #include <unity/scopes/Annotation.h>
 #include <unity/scopes/CategorisedResult.h>
@@ -43,9 +44,7 @@ const static string MESSAGE_TEMPLATE =
         "subtitle": "subject",
         "summary": "snippet",
         "mascot": "gravatar",
-        "attributes": [{
-        "value": "short date"
-        }]
+        "emblem": "emblem"
         }
         }
         )";
@@ -63,9 +62,7 @@ const static string THREADED_TEMPLATE =
         "title": "title",
         "subtitle": "snippet",
         "mascot": "gravatar",
-        "attributes": [{
-        "value": "short date"
-        }]
+        "emblem": "emblem"
         }
         }
         )";
@@ -105,6 +102,11 @@ static std::string contacts_line(Client::ContactList contacts) {
         multiple = true;
     }
     return ss.str();
+}
+
+static std::string create_emblem(std::string date, std::string color) {
+    return "data:image/svg+xml;utf8," SVG_FRAGMENT_1 + color + SVG_FRAGMENT_2 +
+            short_date(date) + SVG_FRAGMENT_3;
 }
 }
 
@@ -187,21 +189,20 @@ void Query::run(sc::SearchReplyProxy const& reply) {
                     break;
                 }
             }
-            std::string shortened = short_date(message_full.header.date);
             stringstream title;
             if (unread)
                 title << "<font color='black'>";
-            title << message_full.header.from.name << "   (" << shortened << ")";
+            title << message_full.header.from.name;
             if (unread)
                 title << "</font>";
             res.set_title(title.str());
 
             res["subject"] = message_full.header.subject;
             res["date"] = message_full.header.date;
-            res["short date"] = shortened;
             if (show_snippets)
                 res["snippet"] = message_full.snippet;
             res["gravatar"] = message_full.header.from.gravatar;
+            res["emblem"] = create_emblem(message_full.header.date, unread ? "black" : "#7a7a7a");
 
             stringstream ss;
             ss << "<strong>From:</strong> " << message_full.header.from.name;

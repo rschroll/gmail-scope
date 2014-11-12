@@ -7,13 +7,6 @@ configure_file(
   @ONLY
 )
 
-configure_file(
-  "${CMAKE_SOURCE_DIR}/data/logo.png"
-  "${CMAKE_CURRENT_BINARY_DIR}/logo.png"
-  @ONLY
-  COPYONLY
-)
-
 # The sources to build the scope
 set(SCOPE_SOURCES
   api/client.cpp

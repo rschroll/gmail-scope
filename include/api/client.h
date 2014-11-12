@@ -26,6 +26,10 @@ const std::string TIME_FMT = "MMMM d, yyyy HH:mm";
 class Client {
 public:
 
+    /**
+     * Data structures
+     */
+
     struct Contact {
         std::string name;
         std::string address;
@@ -44,9 +48,6 @@ public:
 
     typedef std::deque<std::string> Labels;
 
-    /**
-     * Information about an email
-     */
     struct Email {
         std::string id;
         std::string threadId;
@@ -56,20 +57,22 @@ public:
         Labels labels;
     };
 
-    /**
-     * A list of weather information
-     */
     typedef std::deque<Email> EmailList;
+
+    /**
+     * Constructor / destructor
+     */
 
     Client(Config::Ptr config);
 
     virtual ~Client() = default;
 
+    /**
+     * Public methods
+     */
+
     virtual bool authenticated(unity::scopes::OnlineAccountClient &oa_client);
 
-    /**
-     * Get a list of email messages
-     */
     virtual EmailList messages_list(const std::string &query);
 
     virtual Email messages_get(const std::string &id, bool body);
@@ -107,4 +110,3 @@ protected:
 }
 
 #endif // API_CLIENT_H_
-

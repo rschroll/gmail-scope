@@ -11,8 +11,8 @@
 
 namespace sc = unity::scopes;
 
-using namespace std;
 using namespace scope;
+
 
 Preview::Preview(const sc::Result &result, const sc::ActionMetadata &metadata,
                  api::Config::Ptr config) :
@@ -30,19 +30,14 @@ void Preview::run(sc::PreviewReplyProxy const& reply) {
     layout2col.add_column( { "search header", "searches" });
     reply->register_layout( { layout1col, layout2col });
 
-    // Define the header section
     sc::PreviewWidget header("header", "header");
-    // It has title and a subtitle properties
     header.add_attribute_mapping("title", "subject");
     header.add_attribute_mapping("subtitle", "date");
     header.add_attribute_mapping("mascot", "gravatar");
 
-    // Define the summary section
     sc::PreviewWidget recipients("recipients", "text");
-    // It has a text property, mapped to the result's description property
     recipients.add_attribute_mapping("text", "recipients");
 
-    // Search actions
     sc::PreviewWidget search_header("search header", "header");
     search_header.add_attribute_value("title", sc::Variant("Find messages"));
 
@@ -58,15 +53,12 @@ void Preview::run(sc::PreviewReplyProxy const& reply) {
                         { "uri", sc::Variant(thread_query.to_uri()) } });
     searches.add_attribute_value("actions", builder.end());
 
-    // Push each of the sections
     reply->push( { header, recipients, search_header, searches });
 
-    // Get the body
+    // The body we get through another HTTP request, so do it last and push it separately
     api::Client::Email message = client_.messages_get(result()["id"].get_string(), true);
     sc::PreviewWidget body("body", "text");
     body.add_attribute_value("text", sc::Variant(message.body));
 
     reply->push( { body });
-
 }
-

@@ -37,5 +37,3 @@ private:
 }
 
 #endif // SCOPE_QUERY_H_
-
-

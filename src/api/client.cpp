@@ -15,8 +15,10 @@ namespace http = core::net::http;
 namespace net = core::net;
 
 using namespace api;
-using namespace std;
 
+/**
+ * Utility functions for parsing the JSON response
+ */
 namespace {
 
 static QString unescape(QString input) {
@@ -84,7 +86,7 @@ static std::string decode(const QVariant &encoded) {
     QByteArray decoded = QByteArray::fromBase64(encoded.toByteArray().replace("-", "+")
                                                 .replace("_", "/"));
     QList<QByteArray> lines = decoded.replace("\r\n", "\n").split('\n');
-    stringstream ss;
+    std::stringstream ss;
     bool continued = false;
     int quote_level = 0;
     const std::string colors[] = { "#9a5d9a", "#7474a7", "#3f8c8c", "#4c914c", "#818115", "#9f6666" };
@@ -149,16 +151,19 @@ static Client::Email parse_email(const QVariant &i) {
 
 static net::Uri::QueryParameters metadata_params() {
     net::Uri::QueryParameters params = { { "format", "metadata" } };
-    for (string header : { "Date", "From", "To", "Cc", "Subject" })
+    for (std::string header : { "Date", "From", "To", "Cc", "Subject" })
         params.emplace_back("metadataHeaders", header);
     return params;
 }
 }
 
+
+/**
+ * Client class
+ */
 Client::Client(Config::Ptr config) :
     config_(config), cancelled_(false) {
 }
-
 
 void Client::get(const net::Uri::Path &path,
                  const net::Uri::QueryParameters &parameters, QJsonDocument &root) {
@@ -173,7 +178,7 @@ void Client::get(const net::Uri::Path &path,
     configuration.uri = client->uri_to_string(uri);
 
     if (!config_->authenticated) {
-        cerr << "Not authenticated!" << endl;
+        std::cerr << "Not authenticated!" << std::endl;
         return;
     }
 
@@ -187,43 +192,26 @@ void Client::get(const net::Uri::Path &path,
         // Synchronously make the HTTP request
         // We bind the cancellable callback to #progress_report
         auto response = request->execute(
-                    bind(&Client::progress_report, this, placeholders::_1));
+                    std::bind(&Client::progress_report, this, std::placeholders::_1));
 
-        cerr << configuration.uri << endl;
-        //cerr << response.body << endl;
+        std::cerr << configuration.uri << std::endl;
 
         // Check that we got a sensible HTTP status code
         if (response.status != http::Status::ok) {
-            throw domain_error(response.body);
+            throw std::domain_error(response.body);
         }
         // Parse the JSON from the response
         root = QJsonDocument::fromJson(response.body.c_str());
 
-        /*// Open weather map API error code can either be a string or int
-        QVariant cod = root.toVariant().toMap()["cod"];
-        if ((cod.canConvert<QString>() && cod.toString() != "200")
-                || (cod.canConvert<unsigned int>() && cod.toUInt() != 200)) {
-            throw domain_error(root.toVariant().toMap()["message"].toString().toStdString());
-        }*/
     } catch (net::Error &) {
     }
 }
 
-Client::EmailList Client::messages_list(const string& query) {
+Client::EmailList Client::messages_list(const std::string& query) {
     QJsonDocument root;
-
-    // Build a URI and get the contents.
-    // The fist parameter forms the path part of the URI.
-    // The second parameter forms the CGI parameters.
-    get(
-    { "users", "me", "messages" },
-    { { "q", query }, { "maxResults", "20" } },
-                root);
-    // e.g. http://api.openweathermap.org/data/2.5/weather?q=QUERY&units=metric
+    get( { "users", "me", "messages" }, { { "q", query }, { "maxResults", "50" } }, root);
 
     EmailList result;
-
-    // Read out the city we found
     QVariantMap variant = root.toVariant().toMap();
     QVariantList messages = variant["messages"].toList();
 
@@ -233,7 +221,7 @@ Client::EmailList Client::messages_list(const string& query) {
     return result;
 }
 
-Client::Email Client::messages_get(const string& id, bool body = false) {
+Client::Email Client::messages_get(const std::string& id, bool body = false) {
     QJsonDocument root;
     net::Uri::QueryParameters params;
     if (body) {
@@ -247,7 +235,7 @@ Client::Email Client::messages_get(const string& id, bool body = false) {
     return parse_email(message);
 }
 
-Client::EmailList Client::threads_get(const string& id) {
+Client::EmailList Client::threads_get(const std::string& id) {
     QJsonDocument root;
     get({ "users", "me", "threads", id }, metadata_params(), root);
 
@@ -292,4 +280,3 @@ void Client::cancel() {
 Config::Ptr Client::config() {
     return config_;
 }
-

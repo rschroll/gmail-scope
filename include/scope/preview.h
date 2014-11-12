@@ -40,4 +40,3 @@ private:
 }
 
 #endif // SCOPE_PREVIEW_H_
-

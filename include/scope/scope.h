@@ -48,15 +48,9 @@ public:
             unity::scopes::SearchMetadata const&) override;
 
 protected:
-    void service_update(unity::scopes::OnlineAccountClient::ServiceStatus const&);
-
     api::Config::Ptr config_;
-    std::mutex config_mutex_;
-    std::condition_variable config_cond_;
-    std::shared_ptr<unity::scopes::OnlineAccountClient> oa_client_;
 };
 
 }
 
 #endif // SCOPE_SCOPE_H_
-

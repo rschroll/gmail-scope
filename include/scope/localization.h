@@ -19,5 +19,3 @@ inline std::string _(const char *__msgid1, const char *__msgid2,
 }
 
 #endif // SCOPE_LOCALIZATION_H_
-
-

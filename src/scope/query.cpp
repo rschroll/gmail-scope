@@ -20,17 +20,13 @@
 namespace sc = unity::scopes;
 namespace alg = boost::algorithm;
 
-using namespace std;
-using namespace api;
 using namespace scope;
 
 
 /**
- * Define the larger "current weather" layout.
- *
- * The icons are larger.
+ * Templates for displaying results
  */
-const static string MESSAGE_TEMPLATE =
+const static std::string MESSAGE_TEMPLATE =
         R"(
 {
         "schema-version": 1,
@@ -49,7 +45,7 @@ const static string MESSAGE_TEMPLATE =
         }
         )";
 
-const static string THREADED_TEMPLATE =
+const static std::string THREADED_TEMPLATE =
         R"(
 {
         "schema-version": 1,
@@ -67,7 +63,7 @@ const static string THREADED_TEMPLATE =
         }
         )";
 
-const static string LOGIN_TEMPLATE =
+const static std::string LOGIN_TEMPLATE =
         R"(
 {
         "schema-version": 1,
@@ -84,6 +80,9 @@ const static string LOGIN_TEMPLATE =
         }
         )";
 
+/**
+ * Utility functions for displaying information about messages
+ */
 namespace {
 
 static std::string trim_subject(const std::string line) {
@@ -96,7 +95,7 @@ static std::string trim_subject(const std::string line) {
 }
 
 static std::string short_date(std::string input) {
-    QDateTime email = QDateTime::fromString(input.c_str(), TIME_FMT.c_str());
+    QDateTime email = QDateTime::fromString(input.c_str(), api::TIME_FMT.c_str());
     if (!email.isValid())
         return input;
     QDateTime now = QDateTime::currentDateTime();
@@ -109,10 +108,10 @@ static std::string short_date(std::string input) {
     return email.toString("MMM d, yyyy").toStdString();
 }
 
-static std::string contacts_line(Client::ContactList contacts) {
-    stringstream ss;
+static std::string contacts_line(api::Client::ContactList contacts) {
+    std::stringstream ss;
     bool multiple = false;
-    for (const Client::Contact c : contacts) {
+    for (const api::Client::Contact c : contacts) {
         if (multiple)
             ss << ", ";
         ss << c.name;
@@ -127,8 +126,11 @@ static std::string create_emblem(std::string date, std::string color) {
 }
 }
 
+/**
+ * Query class
+ */
 Query::Query(const sc::CannedQuery &query, const sc::SearchMetadata &metadata,
-             Config::Ptr config) :
+             api::Config::Ptr config) :
     sc::SearchQueryBase(query, metadata), client_(config) {
 }
 
@@ -139,7 +141,7 @@ void Query::cancelled() {
 bool Query::init_scope(sc::SearchReplyProxy const& reply) {
     sc::VariantMap config = settings();
     if (config.empty())
-        cerr << "No config!" << endl;
+        std::cerr << "No config!" << std::endl;
     thread_messages = config["threading"].get_bool();
     show_snippets = config["snippets"].get_bool();
 
@@ -165,10 +167,7 @@ void Query::run(sc::SearchReplyProxy const& reply) {
         return;
 
     try {
-        // Start by getting information about the query
         const sc::CannedQuery &query(sc::SearchQueryBase::query());
-
-        // Trim the query string of whitespace
         std::string query_string = alg::trim_copy(query.query_string());
         std::string prefix = "";
         size_t sep = query_string.find(':');
@@ -176,7 +175,7 @@ void Query::run(sc::SearchReplyProxy const& reply) {
             prefix = query_string.substr(0, sep);
         }
 
-        Client::EmailList messages;
+        api::Client::EmailList messages;
         if (prefix == "threadid") {
             messages = client_.threads_get(query_string.substr(sep+1, std::string::npos));
             thread_messages = true;
@@ -188,9 +187,9 @@ void Query::run(sc::SearchReplyProxy const& reply) {
                                                    sc::CategoryRenderer(MESSAGE_TEMPLATE));
         std::map<std::string,sc::Category::SCPtr> categories;
 
-        for (const Client::Email message : messages){
+        for (const api::Client::Email message : messages){
             // Threads already include full messages, searches don't
-            Client::Email message_full;
+            api::Client::Email message_full;
             if (message.snippet != "")
                 message_full = message;
             else
@@ -217,7 +216,7 @@ void Query::run(sc::SearchReplyProxy const& reply) {
                     break;
                 }
             }
-            stringstream title;
+            std::stringstream title;
             if (unread)
                 title << "<font color='black'>";
             title << message_full.header.from.name;
@@ -236,7 +235,7 @@ void Query::run(sc::SearchReplyProxy const& reply) {
             res["from email"] = message_full.header.from.address;
             res["threadid"] = message_full.threadId;
 
-            stringstream ss;
+            std::stringstream ss;
             ss << "<strong>From:</strong> " << message_full.header.from.name;
             std::string to_line = contacts_line(message_full.header.to);
             if (to_line.length())
@@ -248,17 +247,14 @@ void Query::run(sc::SearchReplyProxy const& reply) {
 
             // Push the result
             if (!reply->push(res)) {
-                // If we fail to push, it means the query has been cancelled.
-                // So don't continue;
+                // If the push fails, it means the query has been cancelled.  So quit.
                 return;
             }
         }
 
-    } catch (domain_error &e) {
+    } catch (std::domain_error &e) {
         // Handle exceptions being thrown by the client API
-        cerr << e.what() << endl;
-        reply->error(current_exception());
+        std::cerr << e.what() << std::endl;
+        reply->error(std::current_exception());
     }
-    //reply->finished();
 }
-

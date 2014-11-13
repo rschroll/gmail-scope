@@ -10,7 +10,7 @@
       <setting name="mechanism">web_server</setting>
       <group name="oauth2">
         <group name="web_server">
-          <setting type="as" name="Scope">['https://www.googleapis.com/auth/gmail.readonly']</setting>
+          <setting type="as" name="Scope">['https://www.googleapis.com/auth/gmail.modify']</setting>
           <setting name="ClientId">@CLIENT_ID@</setting>
           <setting name="ClientSecret">@CLIENT_SECRET@</setting>
         </group>

@@ -31,9 +31,9 @@ void Preview::cancelled() {
 void Preview::run(sc::PreviewReplyProxy const& reply) {
     sc::Result res = result();
     sc::ColumnLayout layout1col(1), layout2col(2);
-    layout1col.add_column( { "header", "recipients", "body", "search header", "searches" });
+    layout1col.add_column( { "header", "recipients", "body", "search header", "searches", "reply" });
     layout2col.add_column( { "header", "recipients", "body" });
-    layout2col.add_column( { "search header", "searches" });
+    layout2col.add_column( { "search header", "searches", "reply" });
     reply->register_layout( { layout1col, layout2col });
 
     sc::PreviewWidget header("header", "header");
@@ -49,7 +49,7 @@ void Preview::run(sc::PreviewReplyProxy const& reply) {
 
     sc::PreviewWidget searches("searches", "actions");
     sc::VariantBuilder builder;
-    sc::CannedQuery from_query(SCOPE_NAME, "from:" + res["from email"].get_string(), "");
+    sc::CannedQuery from_query(SCOPE_NAME, "from:" + res["from address"].get_string(), "");
     builder.add_tuple({ { "id", sc::Variant("search from") },
                         { "label", sc::Variant("From " + res["from name"].get_string()) },
                         { "uri", sc::Variant(from_query.to_uri()) } });
@@ -59,7 +59,15 @@ void Preview::run(sc::PreviewReplyProxy const& reply) {
                         { "uri", sc::Variant(thread_query.to_uri()) } });
     searches.add_attribute_value("actions", builder.end());
 
-    reply->push( { header, recipients, search_header, searches });
+    sc::PreviewWidget reply_widget("reply", "rating-input");
+    std::string reply_name = res["replyto name"].get_string();
+    if (reply_name == "")
+        reply_name = res["from name"].get_string();
+    reply_widget.add_attribute_value("visible", sc::Variant("review"));
+    reply_widget.add_attribute_value("required", sc::Variant("review"));
+    reply_widget.add_attribute_value("review-label", sc::Variant("Reply to " + reply_name));
+
+    reply->push( { header, recipients, search_header, searches, reply_widget });
 
     // The body we get through another HTTP request, so do it last and push it separately
     api::Client::Email message = client_.messages_get(result()["id"].get_string(), true);

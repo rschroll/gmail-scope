@@ -238,7 +238,10 @@ void Query::run(sc::SearchReplyProxy const& reply) {
             res["emblem"] = create_emblem(message_full.header.date, unread ? "black" : "#7a7a7a");
 
             res["from name"] = message_full.header.from.name;
-            res["from email"] = message_full.header.from.address;
+            res["from address"] = message_full.header.from.address;
+            res["replyto name"] = message_full.header.replyto.name;
+            res["replyto address"] = message_full.header.replyto.address;
+            res["messageId"] = message_full.header.messageId;
             res["threadid"] = message_full.threadId;
 
             std::stringstream ss;

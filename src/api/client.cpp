@@ -81,8 +81,12 @@ static Client::Header parse_header(const QVariant &headers) {
             header.to = parse_contact_list(value);
         else if (name == "Cc")
             header.cc = parse_contact_list(value);
+        else if (name == "Reply-To")
+            header.replyto = parse_contact(value);
         else if (name == "Subject")
             header.subject = value.toStdString();
+        else if (name == "Message-ID")
+            header.messageId = value.toStdString();
     }
     return header;
 }
@@ -155,9 +159,45 @@ static Client::Email parse_email(const QVariant &i) {
 
 static net::Uri::QueryParameters metadata_params() {
     net::Uri::QueryParameters params = { { "format", "metadata" } };
-    for (std::string header : { "Date", "From", "To", "Cc", "Subject" })
+    for (std::string header : { "Date", "From", "To", "Cc", "Reply-To", "Subject", "Message-ID" })
         params.emplace_back("metadataHeaders", header);
     return params;
+}
+
+/**
+ * Utilities for constructing an RFC822 message
+ */
+static std::string rfc822_address(const Client::Contact& contact) {
+    // TODO: Check for and encode non-ascii characters
+    if (contact.name == contact.address)
+        return contact.address;
+    std::string name = contact.name;
+    if (name.find(',') != std::string::npos)
+        name = "\"" + name + "\"";
+    return name + " <" + contact.address + ">";
+}
+
+void add_rfc822_header(QByteArray& message, const std::string& line) {
+    // TODO: Wrap line if too long
+    message.append(line.c_str());
+    message.append("\r\n");
+}
+
+void end_rfc822_header(QByteArray& message) {
+    add_rfc822_header(message, "X-Mailer: Gmail Scope for Ubuntu");
+    add_rfc822_header(message, "Content-Type: text/plain; charset=utf-8; format=flowed");
+    message.append("\r\n");
+}
+
+void add_rfc822_body(QByteArray& message, const std::string body){
+    // TODO: Wrap long lines, encode
+    QList<QByteArray> lines = QByteArray(body.c_str()).split('\n');
+    for (const QByteArray& line : lines) {
+        if (line.startsWith(" ") || line.startsWith("From ") || line.startsWith(">"))
+            message.append(" ");
+        // TODO: Trim spaces from end
+        message.append(line + "\r\n");
+    }
 }
 }
 
@@ -191,6 +231,49 @@ void Client::get(const net::Uri::Path &path,
 
     // Build a HTTP request object from our configuration
     auto request = client->head(configuration);
+
+    try {
+        // Synchronously make the HTTP request
+        // We bind the cancellable callback to #progress_report
+        auto response = request->execute(
+                    std::bind(&Client::progress_report, this, std::placeholders::_1));
+
+        std::cerr << configuration.uri << std::endl;
+
+        // Check that we got a sensible HTTP status code
+        if (response.status != http::Status::ok) {
+            throw std::domain_error(response.body);
+        }
+        // Parse the JSON from the response
+        root = QJsonDocument::fromJson(response.body.c_str());
+
+    } catch (net::Error &) {
+    }
+}
+
+void Client::post(const net::Uri::Path& path, const net::Uri::QueryParameters& parameters,
+                  const std::string& payload, QJsonDocument& root) {
+    // Create a new HTTP client
+    auto client = http::make_client();
+
+    // Start building the request configuration
+    http::Request::Configuration configuration;
+
+    // Build the URI from its components
+    net::Uri uri = net::make_uri(config_->apiroot, path, parameters);
+    configuration.uri = client->uri_to_string(uri);
+
+    if (!config_->authenticated) {
+        std::cerr << "Not authenticated!" << std::endl;
+        return;
+    }
+
+    configuration.header.add("Authorization", "Bearer " + config_->access_token);
+    configuration.header.add("User-Agent", config_->user_agent);
+    configuration.header.add("Content-Type", "application/json");
+
+    // Build a HTTP request object from our configuration
+    auto request = client->post(configuration, payload, "application/json");
 
     try {
         // Synchronously make the HTTP request
@@ -251,6 +334,27 @@ Client::EmailList Client::threads_get(const std::string& id) {
         result.emplace_back(parse_email(i));
     }
     return result;
+}
+
+Client::Email Client::send_message(const Client::Contact& to, const std::string& subject,
+                                   const std::string& body, const std::string& ref_id,
+                                   const std::string& thread_id) {
+    QByteArray message;
+    // TODO: Set from line (must use gmail address)
+    add_rfc822_header(message, "In-Reply-To: " + ref_id);
+    add_rfc822_header(message, "References: " + ref_id);
+    add_rfc822_header(message, "To: " + rfc822_address(to));
+    add_rfc822_header(message, "Subject: " + subject);
+    end_rfc822_header(message);
+    add_rfc822_body(message, body);
+
+    std::string request_body = "{ \"raw\": \"" +
+            std::string(message.toBase64(QByteArray::Base64UrlEncoding).constData()) +
+            "\", \"threadId\": \"" + thread_id + "\" }";
+    std::cerr << request_body << std::endl;
+    QJsonDocument root;
+    post({ "users", "me", "messages", "send" }, {}, request_body, root);
+    return parse_email(root.toVariant());
 }
 
 bool Client::authenticated(unity::scopes::OnlineAccountClient& oa_client) {

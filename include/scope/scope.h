@@ -47,6 +47,15 @@ public:
             unity::scopes::CannedQuery const& q,
             unity::scopes::SearchMetadata const&) override;
 
+    /**
+     * Called each action activation
+     */
+    unity::scopes::ActivationQueryBase::UPtr perform_action(
+            const unity::scopes::Result &result,
+            const unity::scopes::ActionMetadata &metadata,
+            const std::string &widget_id,
+            const std::string &action_id) override;
+
 protected:
     api::Config::Ptr config_;
 };

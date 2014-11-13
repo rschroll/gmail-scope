@@ -13,6 +13,7 @@ set(SCOPE_SOURCES
   scope/preview.cpp
   scope/query.cpp
   scope/scope.cpp
+  scope/activation.cpp
 )
 
 # Find all the headers

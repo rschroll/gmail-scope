@@ -43,7 +43,9 @@ public:
         Contact from;
         ContactList to;
         ContactList cc;
+        Contact replyto;
         std::string subject;
+        std::string messageId;
     };
 
     typedef std::deque<std::string> Labels;
@@ -79,6 +81,10 @@ public:
 
     virtual EmailList threads_get(const std::string& id);
 
+    virtual Email send_message(const Contact& to, const std::string& subject,
+                               const std::string& body, const std::string& ref_id,
+                               const std::string &thread_id);
+
     /**
      * Cancel any pending queries (this method can be called from a different thread)
      */
@@ -90,6 +96,11 @@ protected:
     void get(const core::net::Uri::Path &path,
              const core::net::Uri::QueryParameters &parameters,
              QJsonDocument &root);
+
+    void post(const core::net::Uri::Path &path,
+              const core::net::Uri::QueryParameters &parameters,
+              const std::string& payload,
+              QJsonDocument &root);
     /**
      * Progress callback that allows the query to cancel pending HTTP requests.
      */

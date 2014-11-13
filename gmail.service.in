@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<service id="@SCOPE_INSTALL_NAME@">
+<service>
   <type>@SCOPE_INSTALL_NAME@</type>
   <name>Gmail</name>
   <provider>google</provider>
-  <translations>gmail-scope</translations>
   <template>
     <group name="auth">
       <setting name="method">oauth2</setting>

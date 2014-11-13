@@ -183,8 +183,8 @@ void add_rfc822_header(QByteArray& message, const std::string& line) {
     message.append("\r\n");
 }
 
-void end_rfc822_header(QByteArray& message) {
-    add_rfc822_header(message, "X-Mailer: Gmail Scope for Ubuntu");
+void end_rfc822_header(QByteArray& message, const std::string& user_agent) {
+    add_rfc822_header(message, "X-Mailer: " + user_agent);
     add_rfc822_header(message, "Content-Type: text/plain; charset=utf-8; format=flowed");
     message.append("\r\n");
 }
@@ -345,7 +345,7 @@ Client::Email Client::send_message(const Client::Contact& to, const std::string&
     add_rfc822_header(message, "References: " + ref_id);
     add_rfc822_header(message, "To: " + rfc822_address(to));
     add_rfc822_header(message, "Subject: " + subject);
-    end_rfc822_header(message);
+    end_rfc822_header(message, config_->user_agent);
     add_rfc822_body(message, body);
 
     std::string request_body = "{ \"raw\": \"" +

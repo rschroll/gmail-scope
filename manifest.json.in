@@ -13,5 +13,5 @@
     "maintainer": "Robert Schroll <rschroll@gmail.com>",
     "name": "com.ubuntu.developer.rschroll.gmail",
     "title": "gmail",
-    "version": "0.1"
+    "version": "@SCOPE_VERSION@"
 }

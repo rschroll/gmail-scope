@@ -17,7 +17,7 @@ struct Config {
     /*
      * The custom HTTP user agent string for this library
      */
-    std::string user_agent { "Gmail Scope for Ubuntu" };
+    std::string user_agent { "Gmail Scope (Ubuntu) " VERSION };
 
     // From the YouTube scope
     std::string access_token { };

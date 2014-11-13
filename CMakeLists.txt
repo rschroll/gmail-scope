@@ -49,6 +49,7 @@ include_directories(
 )
 
 set(SCOPE_INSTALL_NAME "com.ubuntu.developer.rschroll.gmail_gmail")
+set(SCOPE_VERSION "0.1.1")
 
 # Do not remove this line, its required for the correct functionality of the Ubuntu-SDK
 set(UBUNTU_MANIFEST_PATH "manifest.json.in" CACHE INTERNAL "Tells QtCreator location and name of the manifest file")
@@ -61,7 +62,8 @@ set(GETTEXT_PACKAGE "gmail")
 
 # If we need to refer to the scope's name or package in code, these definitions will help
 add_definitions(-DPACKAGE_NAME="com.ubuntu.developer.rschroll.gmail")
-add_definitions(-DSCOPE_NAME="com.ubuntu.developer.rschroll.gmail_gmail")
+add_definitions(-DSCOPE_NAME="${SCOPE_INSTALL_NAME}")
+add_definitions(-DVERSION="${SCOPE_VERSION}")
 add_definitions(-DGETTEXT_PACKAGE="${GETTEXT_PACKAGE}")
 
 #This command figures out the target architecture and puts it into the manifest file

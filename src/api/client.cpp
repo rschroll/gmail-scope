@@ -88,9 +88,7 @@ static Client::Header parse_header(const QVariant &headers) {
 }
 
 static std::string decode(const QVariant &encoded) {
-    // There is an alternate encoding of "62" and "63".
-    QByteArray decoded = QByteArray::fromBase64(encoded.toByteArray().replace("-", "+")
-                                                .replace("_", "/"));
+    QByteArray decoded = QByteArray::fromBase64(encoded.toByteArray(), QByteArray::Base64UrlEncoding);
     QList<QByteArray> lines = decoded.replace("\r\n", "\n").split('\n');
     std::stringstream ss;
     bool continued = false;

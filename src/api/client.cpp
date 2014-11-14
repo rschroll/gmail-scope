@@ -30,7 +30,7 @@ namespace {
 
 static QString unescape(QString input) {
     return input.replace("&quot;", "\"").replace("&#39;", "'").replace("&gt;", ">")
-            .replace("&lt;", "<");
+            .replace("&lt;", "<").replace("&amp;", "&");
 }
 
 static QString parse_time(QString input) {

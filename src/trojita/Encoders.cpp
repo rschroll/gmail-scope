@@ -409,12 +409,9 @@ QString decodeByteArray(const QByteArray &encoded, const QByteArray &charset)
 /** @short Encode the given string into RFC2047 form, preserving the ASCII leading part if possible */
 QByteArray encodeRFC2047StringWithAsciiPrefix(const QString &text)
 {
-    // The maximal recommended line length, as defined by RFC 5322
-    const int maxLineLength = 78;
-
     // Find first character which needs escaping
     int pos = 0;
-    while (pos < text.size() && pos < maxLineLength &&
+    while (pos < text.size() &&
            (text[pos].unicode() == 0x20 || !rfc2047QPNeedsEscpaing(text[pos].unicode(), Rfc2047ProductionType::Text)))
         ++pos;
 

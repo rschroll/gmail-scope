@@ -14,6 +14,8 @@ set(SCOPE_SOURCES
   scope/query.cpp
   scope/scope.cpp
   scope/activation.cpp
+  trojita/Encoders.cpp
+  trojita/kcodecs.cpp
 )
 
 # Find all the headers

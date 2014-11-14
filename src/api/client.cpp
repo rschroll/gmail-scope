@@ -5,6 +5,7 @@
  */
 
 #include <api/client.h>
+#include <trojita/Encoders.h>
 
 #include <core/net/error.h>
 #include <core/net/http/client.h>
@@ -167,18 +168,21 @@ static net::Uri::QueryParameters metadata_params() {
 /**
  * Utilities for constructing an RFC822 message
  */
+static std::string encode_rfc2074(const std::string& input) {
+    return Imap::encodeRFC2047StringWithAsciiPrefix(QString(input.c_str())).constData();
+}
+
 static std::string rfc822_address(const Client::Contact& contact) {
-    // TODO: Check for and encode non-ascii characters
     if (contact.name == contact.address)
         return contact.address;
     std::string name = contact.name;
     if (name.find(',') != std::string::npos)
         name = "\"" + name + "\"";
-    return name + " <" + contact.address + ">";
+    return encode_rfc2074(name) + " <" + contact.address + ">";
 }
 
 void add_rfc822_header(QByteArray& message, const std::string& line) {
-    // TODO: Wrap line if too long
+    // Gmail will wrap long header lines for us.
     message.append(line.c_str());
     message.append("\r\n");
 }
@@ -186,18 +190,12 @@ void add_rfc822_header(QByteArray& message, const std::string& line) {
 void end_rfc822_header(QByteArray& message, const std::string& user_agent) {
     add_rfc822_header(message, "X-Mailer: " + user_agent);
     add_rfc822_header(message, "Content-Type: text/plain; charset=utf-8; format=flowed");
+    add_rfc822_header(message, "Content-Transfer-Encoding: quoted-printable");
     message.append("\r\n");
 }
 
 void add_rfc822_body(QByteArray& message, const std::string body){
-    // TODO: Wrap long lines, encode
-    QList<QByteArray> lines = QByteArray(body.c_str()).split('\n');
-    for (const QByteArray& line : lines) {
-        if (line.startsWith(" ") || line.startsWith("From ") || line.startsWith(">"))
-            message.append(" ");
-        // TODO: Trim spaces from end
-        message.append(line + "\r\n");
-    }
+    message.append(Imap::quotedPrintableEncode(Imap::wrapFormatFlowed(body.c_str()).toUtf8()));
 }
 }
 
@@ -344,7 +342,7 @@ Client::Email Client::send_message(const Client::Contact& to, const std::string&
     add_rfc822_header(message, "In-Reply-To: " + ref_id);
     add_rfc822_header(message, "References: " + ref_id);
     add_rfc822_header(message, "To: " + rfc822_address(to));
-    add_rfc822_header(message, "Subject: " + subject);
+    add_rfc822_header(message, "Subject: " + encode_rfc2074(subject));
     end_rfc822_header(message, config_->user_agent);
     add_rfc822_body(message, body);
 

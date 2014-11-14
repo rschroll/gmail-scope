@@ -85,7 +85,7 @@ static Client::Header parse_header(const QVariant &headers) {
             header.replyto = parse_contact(value);
         else if (name == "Subject")
             header.subject = value.toStdString();
-        else if (name == "Message-ID")
+        else if (name == "Message-ID" || name == "Message-Id")
             header.messageId = value.toStdString();
     }
     return header;
@@ -159,7 +159,7 @@ static Client::Email parse_email(const QVariant &i) {
 
 static net::Uri::QueryParameters metadata_params() {
     net::Uri::QueryParameters params = { { "format", "metadata" } };
-    for (std::string header : { "Date", "From", "To", "Cc", "Reply-To", "Subject", "Message-ID" })
+    for (std::string header : { "Date", "From", "To", "Cc", "Reply-To", "Subject", "Message-ID", "Message-Id" })
         params.emplace_back("metadataHeaders", header);
     return params;
 }

@@ -1,0 +1,13 @@
+Copyright 2014 Robert Schroll
+
+Beru is licensed under the GNU General Public License (version 3 or
+later).  See the LICENSE file for the terms of this license.
+
+The files in include/trojita/ and src/trojita/ are taken from the
+Trojita email client (http://trojita.flaska.net/), and may be used under
+the GPL v2, at your option.  See the individual files for copyright
+information.
+
+If you received the Gmail Scope as a click package, you may not have
+received the sources to these components.  All are available at
+https://github.com/rschroll/gmail-scope

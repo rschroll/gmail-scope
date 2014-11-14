@@ -40,7 +40,7 @@ your problem listed there, please add it!
 License
 -------
 The Gmail Scope is licensed under the GPL v3 or later.  See the file
-LICENSE for more details.
+COPYING for more details.
 
 
 [1]: http://developer.ubuntu.com/start/ubuntu-sdk/installing-the-sdk/ "Ubuntu SDK"

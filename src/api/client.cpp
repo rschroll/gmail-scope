@@ -120,7 +120,17 @@ static std::string decode(const QVariant &encoded) {
         if (!continued)
             ss << "<br>";
     }
-    return ss.str();
+    while (quote_level > 0) {
+        ss << "</font>";
+        quote_level -= 1;
+    }
+
+    // Remove extra blank lines from end
+    std::string value = ss.str();
+    size_t n = value.length();
+    while (n > 4 && value.substr(n - 4, 4) == "<br>")
+        n -= 4;
+    return value.substr(0, n);
 }
 
 static std::string parse_payload(const QVariant &p) {

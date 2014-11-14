@@ -33,7 +33,7 @@ sc::ActivationResponse Activation::activate() {
         replyto.name = res[to_source + " name"].get_string();
         replyto.address = res[to_source + " address"].get_string();
         client_.send_message(replyto, "Re: " + res["subject"].get_string(), message,
-                res["messageId"].get_string(), threadid);
+                settings()["from"].get_string(), res["messageId"].get_string(), threadid);
 
         sc::CannedQuery query(SCOPE_NAME, "threadid:" + threadid, "");
         return sc::ActivationResponse(query);

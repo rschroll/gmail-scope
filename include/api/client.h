@@ -82,8 +82,10 @@ public:
     virtual EmailList threads_get(const std::string& id);
 
     virtual Email send_message(const Contact& to, const std::string& subject,
-                               const std::string& body, const std::string& ref_id,
-                               const std::string &thread_id);
+                               const std::string& body, const std::string &from_name,
+                               const std::string& ref_id, const std::string &thread_id);
+
+    virtual std::string users_address();
 
     /**
      * Cancel any pending queries (this method can be called from a different thread)

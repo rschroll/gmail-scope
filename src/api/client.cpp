@@ -173,7 +173,7 @@ static std::string encode_rfc2074(const std::string& input) {
 }
 
 static std::string rfc822_address(const Client::Contact& contact) {
-    if (contact.name == contact.address)
+    if (contact.name == contact.address || contact.name == "")
         return contact.address;
     std::string name = contact.name;
     if (name.find(',') != std::string::npos)
@@ -335,12 +335,18 @@ Client::EmailList Client::threads_get(const std::string& id) {
 }
 
 Client::Email Client::send_message(const Client::Contact& to, const std::string& subject,
-                                   const std::string& body, const std::string& ref_id,
-                                   const std::string& thread_id) {
+                                   const std::string& body, const std::string& from_name,
+                                   const std::string& ref_id, const std::string& thread_id) {
     QByteArray message;
-    // TODO: Set from line (must use gmail address)
+    Contact from;
+    from.address = users_address();
+    from.name = from_name;
+
     add_rfc822_header(message, "In-Reply-To: " + ref_id);
     add_rfc822_header(message, "References: " + ref_id);
+    if (from.address != "")
+        add_rfc822_header(message, "From: " + rfc822_address(from));
+    // Otherwise, Google will add a From header for us.
     add_rfc822_header(message, "To: " + rfc822_address(to));
     add_rfc822_header(message, "Subject: " + encode_rfc2074(subject));
     end_rfc822_header(message, config_->user_agent);
@@ -353,6 +359,13 @@ Client::Email Client::send_message(const Client::Contact& to, const std::string&
     QJsonDocument root;
     post({ "users", "me", "messages", "send" }, {}, request_body, root);
     return parse_email(root.toVariant());
+}
+
+std::string Client::users_address() {
+    QJsonDocument root;
+    get({ "users", "me", "profile" }, {}, root);
+
+    return root.toVariant().toMap()["emailAddress"].toString().toStdString();
 }
 
 bool Client::authenticated(unity::scopes::OnlineAccountClient& oa_client) {

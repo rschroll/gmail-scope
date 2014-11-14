@@ -201,6 +201,18 @@ void Query::run(sc::SearchReplyProxy const& reply) {
             else
                 message_full = client_.messages_get(message.id, false);
 
+            bool unread = false;
+            bool draft = false;
+            for (const std::string &label : message_full.labels) {
+                if (label == "UNREAD")
+                    unread = true;
+                if (label == "DRAFT")
+                    draft = true;
+            }
+            // Don't display drafts
+            if (draft)
+                continue;
+
             sc::Category::SCPtr cat = single_cat;
             if (thread_messages) {
                 if (categories[message_full.threadId] == NULL)
@@ -215,13 +227,7 @@ void Query::run(sc::SearchReplyProxy const& reply) {
             // We must have a URI
             res.set_uri("gmail://" + message_full.id);
             res["id"] = message_full.id;
-            bool unread = false;
-            for (const std::string &label : message_full.labels) {
-                if (label == "UNREAD") {
-                    unread = true;
-                    break;
-                }
-            }
+
             std::stringstream title;
             if (unread)
                 title << "<font color='black'>";

@@ -31,9 +31,9 @@ void Preview::cancelled() {
 void Preview::run(sc::PreviewReplyProxy const& reply) {
     sc::Result res = result();
     sc::ColumnLayout layout1col(1), layout2col(2);
-    layout1col.add_column( { "header", "recipients", "body", "search header", "searches", "reply" });
+    layout1col.add_column( { "header", "recipients", "body", "modifiers", "search header", "searches", "reply" });
     layout2col.add_column( { "header", "recipients", "body" });
-    layout2col.add_column( { "search header", "searches", "reply" });
+    layout2col.add_column( { "modifiers", "search header", "searches", "reply" });
     reply->register_layout( { layout1col, layout2col });
 
     sc::PreviewWidget header("header", "header");
@@ -74,5 +74,19 @@ void Preview::run(sc::PreviewReplyProxy const& reply) {
     sc::PreviewWidget body("body", "text");
     body.add_attribute_value("text", sc::Variant(message.body));
 
-    reply->push( { body });
+    bool unread = false;
+    for (const std::string &label : message.labels) {
+        if (label == "UNREAD") {
+            unread = true;
+            break;
+        }
+    }
+    sc::PreviewWidget modifiers("modifiers", "actions");
+    std::string status = (unread ? "read" : "unread");
+    sc::VariantBuilder mbuilder;
+    mbuilder.add_tuple({ { "id", sc::Variant("mark " + status) },
+                        { "label", sc::Variant("Mark " + status) } });
+    modifiers.add_attribute_value("actions", mbuilder.end());
+
+    reply->push( { body, modifiers });
 }

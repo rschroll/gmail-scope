@@ -320,7 +320,7 @@ Client::Email Client::messages_get(const std::string& id, bool body = false) {
     QJsonDocument root;
     net::Uri::QueryParameters params;
     if (body) {
-        params = { { "format", "full" }, { "fields", "payload" } };
+        params = { { "format", "full" }, { "fields", "payload,labelIds" } };
     } else {
         params = metadata_params();
     }
@@ -328,6 +328,14 @@ Client::Email Client::messages_get(const std::string& id, bool body = false) {
 
     QVariant message = root.toVariant();
     return parse_email(message);
+}
+
+Client::Email Client::messages_set_unread(const std::string& id, bool unread) {
+    std::string command = unread ? "addLabelIds" : "removeLabelIds";
+    std::string payload = "{ \"" + command + "\": [\"UNREAD\"] }";
+    QJsonDocument root;
+    post({ "users", "me", "messages", id, "modify" }, {}, payload, root);
+    return parse_email(root.toVariant());
 }
 
 Client::EmailList Client::threads_get(const std::string& id) {

@@ -79,6 +79,8 @@ public:
 
     virtual Email messages_get(const std::string &id, bool body);
 
+    virtual Email messages_set_unread(const std::string& id, bool unread);
+
     virtual EmailList threads_get(const std::string& id);
 
     virtual Email send_message(const Contact& to, const std::string& subject,

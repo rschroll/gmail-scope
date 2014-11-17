@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <deque>
 
 namespace api {
 
@@ -24,6 +25,12 @@ struct Config {
     std::string client_id { };
     std::string client_secret { };
     bool authenticated = false;
+
+    /*
+     * Cached values
+     */
+    std::string users_address { };
+    std::deque<std::pair<std::string, std::string>> labels { };
 };
 
 }

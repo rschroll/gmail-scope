@@ -395,33 +395,39 @@ Client::Email Client::send_message(const Client::Contact& to, const std::string&
 }
 
 std::string Client::users_address() {
-    QJsonDocument root;
-    get({ "users", "me", "profile" }, {}, root);
-
-    return root.toVariant().toMap()["emailAddress"].toString().toStdString();
+    if (config_->users_address.empty()) {
+        QJsonDocument root;
+        get({ "users", "me", "profile" }, {}, root);
+        config_->users_address = root.toVariant().toMap()["emailAddress"].toString().toStdString();
+    }
+    return config_->users_address;
 }
 
 Client::LabelList Client::get_labels() {
-    QJsonDocument root;
-    get({ "users", "me", "labels" }, {}, root);
+    if (config_->labels.empty()) {
+        QJsonDocument root;
+        get({ "users", "me", "labels" }, {}, root);
 
-    LabelList result;
-    LabelList::iterator iter;
-    QVariantMap variant = root.toVariant().toMap();
-    QVariantList labels = variant["labels"].toList();
+        LabelList::iterator iter;
+        QVariantMap variant = root.toVariant().toMap();
+        QVariantList labels = variant["labels"].toList();
 
-    for (const QVariant &i : labels) {
-        QVariantMap label_map = i.toMap();
-        if (label_map["messageListVisibility"] == "show") {
-            iter = result.begin();
-            std::string name = label_map["name"].toString().toStdString();
-            // Sort by names, case insensitively
-            while (iter != result.end() && strcasecmp(iter->second.c_str(), name.c_str()) <= 0)
-                iter += 1;
-            result.insert(iter, std::make_pair(label_map["id"].toString().toStdString(), name));
+        for (const QVariant &i : labels) {
+            QVariantMap label_map = i.toMap();
+            if (label_map["messageListVisibility"] == "show") {
+                iter = config_->labels.begin();
+                std::string name = label_map["name"].toString().toStdString();
+                // Sort by names, case insensitively
+                while (iter != config_->labels.end() &&
+                       strcasecmp(iter->second.c_str(), name.c_str()) <= 0)
+                    iter += 1;
+                config_->labels.insert(iter,
+                                       std::make_pair(label_map["id"].toString().toStdString(),
+                                       name));
+            }
         }
     }
-    return result;
+    return config_->labels;
 }
 
 bool Client::authenticated(unity::scopes::OnlineAccountClient& oa_client) {

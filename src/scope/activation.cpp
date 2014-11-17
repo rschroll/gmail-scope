@@ -45,6 +45,10 @@ sc::ActivationResponse Activation::activate() {
             client_.messages_set_unread(id, true);
         else if (actionId == "mark read")
             client_.messages_set_unread(id, false);
+        else if (actionId == "trash")
+            client_.messages_trash(id);
+        else if (actionId == "untrash")
+            client_.messages_untrash(id);
         return sc::ActivationResponse::ShowPreview;
     }
     return sc::ActivationResponse::NotHandled;

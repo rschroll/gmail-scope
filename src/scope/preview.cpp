@@ -75,17 +75,20 @@ void Preview::run(sc::PreviewReplyProxy const& reply) {
     body.add_attribute_value("text", sc::Variant(message.body));
 
     bool unread = false;
+    bool trash = false;
     for (const std::string &label : message.labels) {
-        if (label == "UNREAD") {
+        if (label == "UNREAD")
             unread = true;
-            break;
-        }
+        else if (label == "TRASH")
+            trash = true;
     }
     sc::PreviewWidget modifiers("modifiers", "actions");
     std::string status = (unread ? "read" : "unread");
     sc::VariantBuilder mbuilder;
     mbuilder.add_tuple({ { "id", sc::Variant("mark " + status) },
                         { "label", sc::Variant("Mark " + status) } });
+    mbuilder.add_tuple({ { "id", sc::Variant(trash ? "untrash" : "trash") },
+                         { "label", sc::Variant(trash ? "Remove from trash" : "Move to trash") } });
     modifiers.add_attribute_value("actions", mbuilder.end());
 
     reply->push( { body, modifiers });

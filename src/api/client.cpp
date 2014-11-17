@@ -338,6 +338,18 @@ Client::Email Client::messages_set_unread(const std::string& id, bool unread) {
     return parse_email(root.toVariant());
 }
 
+Client::Email Client::messages_trash(const std::string& id) {
+    QJsonDocument root;
+    post({ "users", "me", "messages", id, "trash" }, {}, "", root);
+    return parse_email(root.toVariant());
+}
+
+Client::Email Client::messages_untrash(const std::string& id) {
+    QJsonDocument root;
+    post({ "users", "me", "messages", id, "untrash" }, {}, "", root);
+    return parse_email(root.toVariant());
+}
+
 Client::EmailList Client::threads_get(const std::string& id) {
     QJsonDocument root;
     get({ "users", "me", "threads", id }, metadata_params(), root);

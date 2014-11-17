@@ -16,6 +16,7 @@
 #include <unity/scopes/QueryBase.h>
 #include <unity/scopes/SearchReply.h>
 #include <unity/scopes/OnlineAccountClient.h>
+#include <unity/scopes/Department.h>
 
 #include <QDateTime>
 #include <QRegularExpression>
@@ -181,12 +182,34 @@ void Query::run(sc::SearchReplyProxy const& reply) {
             prefix = query_string.substr(0, sep);
         }
 
+        // The empty string here is important; it denotes the department to use when none has been
+        // selected by the user.
+        sc::Department::SPtr inbox = sc::Department::create("", query, "Inbox");
+        api::Client::LabelList labels = client_.get_labels();
+        for (const auto label_pair : labels) {
+            sc::Department::SPtr dept = sc::Department::create(label_pair.first, query,
+                                                               label_pair.second);
+            inbox->add_subdepartment(dept);
+        }
+        sc::Department::SPtr all_mail = sc::Department::create("ALL_MAIL", query, "All mail");
+        inbox->add_subdepartment(all_mail);
+        reply->register_departments(inbox);
+
         api::Client::EmailList messages;
         if (prefix == "threadid") {
             messages = client_.threads_get(query_string.substr(sep+1, std::string::npos));
             thread_messages = true;
         } else {
-            messages = client_.messages_list(query_string);
+            std::string label_id = "";
+            if (query_string.empty()) {
+                // We only get department info for empty query strings
+                label_id = query.department_id();
+                if (label_id == "")
+                    label_id = "INBOX";
+                else if (label_id == "ALL_MAIL")
+                    label_id = "";
+            }
+            messages = client_.messages_list(query_string, label_id);
         }
 
         auto single_cat = reply->register_category("messages", "", "",

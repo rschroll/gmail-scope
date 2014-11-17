@@ -302,9 +302,12 @@ void Client::post(const net::Uri::Path& path, const net::Uri::QueryParameters& p
     }
 }
 
-Client::EmailList Client::messages_list(const std::string& query) {
+Client::EmailList Client::messages_list(const std::string& query, const std::string& label_id) {
     QJsonDocument root;
-    get( { "users", "me", "messages" }, { { "q", query }, { "maxResults", "50" } }, root);
+    net::Uri::QueryParameters params = { { "q", query }, { "maxResults", "50" } };
+    if (label_id != "")
+        params.emplace_back("labelIds", label_id);
+    get( { "users", "me", "messages" }, params, root);
 
     EmailList result;
     QVariantMap variant = root.toVariant().toMap();
@@ -396,6 +399,29 @@ std::string Client::users_address() {
     get({ "users", "me", "profile" }, {}, root);
 
     return root.toVariant().toMap()["emailAddress"].toString().toStdString();
+}
+
+Client::LabelList Client::get_labels() {
+    QJsonDocument root;
+    get({ "users", "me", "labels" }, {}, root);
+
+    LabelList result;
+    LabelList::iterator iter;
+    QVariantMap variant = root.toVariant().toMap();
+    QVariantList labels = variant["labels"].toList();
+
+    for (const QVariant &i : labels) {
+        QVariantMap label_map = i.toMap();
+        if (label_map["messageListVisibility"] == "show") {
+            iter = result.begin();
+            std::string name = label_map["name"].toString().toStdString();
+            // Sort by names, case insensitively
+            while (iter != result.end() && strcasecmp(iter->second.c_str(), name.c_str()) <= 0)
+                iter += 1;
+            result.insert(iter, std::make_pair(label_map["id"].toString().toStdString(), name));
+        }
+    }
+    return result;
 }
 
 bool Client::authenticated(unity::scopes::OnlineAccountClient& oa_client) {

@@ -61,6 +61,8 @@ public:
 
     typedef std::deque<Email> EmailList;
 
+    typedef std::deque<std::pair<std::string, std::string>> LabelList;
+
     /**
      * Constructor / destructor
      */
@@ -75,7 +77,7 @@ public:
 
     virtual bool authenticated(unity::scopes::OnlineAccountClient &oa_client);
 
-    virtual EmailList messages_list(const std::string &query);
+    virtual EmailList messages_list(const std::string &query, const std::string &label_id);
 
     virtual Email messages_get(const std::string &id, bool body);
 
@@ -92,6 +94,8 @@ public:
                                const std::string& ref_id, const std::string &thread_id);
 
     virtual std::string users_address();
+
+    virtual LabelList get_labels();
 
     /**
      * Cancel any pending queries (this method can be called from a different thread)

@@ -212,21 +212,20 @@ void Query::run(sc::SearchReplyProxy const& reply) {
             messages = client_.messages_list(query_string, label_id);
         }
 
+        if (!messages.empty()) {
+            // Threads already include full messages, searches don't
+            if (messages[0].snippet == "")
+                messages = client_.messages_get_batch(messages);
+        }
+
         auto single_cat = reply->register_category("messages", "", "",
                                                    sc::CategoryRenderer(MESSAGE_TEMPLATE));
         std::map<std::string,sc::Category::SCPtr> categories;
 
         for (const api::Client::Email message : messages){
-            // Threads already include full messages, searches don't
-            api::Client::Email message_full;
-            if (message.snippet != "")
-                message_full = message;
-            else
-                message_full = client_.messages_get(message.id, false);
-
             bool unread = false;
             bool draft = false;
-            for (const std::string &label : message_full.labels) {
+            for (const std::string &label : message.labels) {
                 if (label == "UNREAD")
                     unread = true;
                 if (label == "DRAFT")
@@ -238,47 +237,47 @@ void Query::run(sc::SearchReplyProxy const& reply) {
 
             sc::Category::SCPtr cat = single_cat;
             if (thread_messages) {
-                if (categories[message_full.threadId] == NULL)
-                    categories[message_full.threadId] =
-                            reply->register_category(message_full.threadId,
-                                                     trim_subject(message_full.header.subject), "",
+                if (categories[message.threadId] == NULL)
+                    categories[message.threadId] =
+                            reply->register_category(message.threadId,
+                                                     trim_subject(message.header.subject), "",
                                                      sc::CategoryRenderer(THREADED_TEMPLATE));
-                cat = categories[message_full.threadId];
+                cat = categories[message.threadId];
             }
             sc::CategorisedResult res(cat);
 
             // We must have a URI
-            res.set_uri("gmail://" + message_full.id);
-            res["id"] = message_full.id;
+            res.set_uri("gmail://" + message.id);
+            res["id"] = message.id;
 
             std::stringstream title;
             if (unread)
                 title << "<font color='black'>";
-            title << message_full.header.from.name;
+            title << message.header.from.name;
             if (unread)
                 title << "</font>";
             res.set_title(title.str());
 
-            res["subject"] = message_full.header.subject;
-            res["date"] = message_full.header.date;
+            res["subject"] = message.header.subject;
+            res["date"] = message.header.date;
             if (show_snippets)
-                res["snippet"] = message_full.snippet;
-            res["gravatar"] = message_full.header.from.gravatar;
-            res["emblem"] = create_emblem(message_full.header.date, unread ? "black" : "#7a7a7a");
+                res["snippet"] = message.snippet;
+            res["gravatar"] = message.header.from.gravatar;
+            res["emblem"] = create_emblem(message.header.date, unread ? "black" : "#7a7a7a");
 
-            res["from name"] = message_full.header.from.name;
-            res["from address"] = message_full.header.from.address;
-            res["replyto name"] = message_full.header.replyto.name;
-            res["replyto address"] = message_full.header.replyto.address;
-            res["messageId"] = message_full.header.messageId;
-            res["threadid"] = message_full.threadId;
+            res["from name"] = message.header.from.name;
+            res["from address"] = message.header.from.address;
+            res["replyto name"] = message.header.replyto.name;
+            res["replyto address"] = message.header.replyto.address;
+            res["messageId"] = message.header.messageId;
+            res["threadid"] = message.threadId;
 
             std::stringstream ss;
-            ss << "<strong>From:</strong> " << message_full.header.from.name;
-            std::string to_line = contacts_line(message_full.header.to);
+            ss << "<strong>From:</strong> " << message.header.from.name;
+            std::string to_line = contacts_line(message.header.to);
             if (to_line.length())
                 ss << "<br><strong>To:</strong> " << to_line;
-            std::string cc_line = contacts_line(message_full.header.cc);
+            std::string cc_line = contacts_line(message.header.cc);
             if (cc_line.length())
                 ss << "<br><strong>Cc:</strong> " << cc_line;
             res["recipients"] = ss.str();

@@ -81,6 +81,8 @@ public:
 
     virtual Email messages_get(const std::string &id, bool body);
 
+    virtual EmailList messages_get_batch(const EmailList &messages);
+
     virtual Email messages_set_unread(const std::string& id, bool unread);
 
     virtual Email messages_trash(const std::string& id);

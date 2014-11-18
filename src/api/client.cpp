@@ -333,6 +333,75 @@ Client::Email Client::messages_get(const std::string& id, bool body = false) {
     return parse_email(message);
 }
 
+Client::EmailList Client::messages_get_batch(const EmailList& messages) {
+    Client::EmailList result;
+
+    // Create a new HTTP client
+    auto client = http::make_client();
+
+    // Start building the request configuration
+    http::Request::Configuration configuration;
+    configuration.uri = "https://www.googleapis.com/batch";
+
+    if (!config_->authenticated) {
+        std::cerr << "Not authenticated!" << std::endl;
+        return result;
+    }
+
+    std::string boundary = "batch_boundary_fnord";
+    configuration.header.add("Authorization", "Bearer " + config_->access_token);
+    configuration.header.add("User-Agent", config_->user_agent);
+    configuration.header.add("Content-Type", "multipart/mixed; boundary=" + boundary);
+
+    std::stringstream ss;
+    int i = 0;
+    for (const Client::Email& message : messages) {
+        std::string id = message.id;
+        ss << "--" << boundary << "\n";
+        ss << "Content-Type: application/http\n";
+        ss << "Content-ID: <" << i << ":" << id << "@rschroll.developer.ubuntu.com>\n\n";
+        net::Uri uri = net::make_uri("/gmail/v1", { "users", "me", "messages", id }, metadata_params());
+        ss << "GET " << client->uri_to_string(uri) << "\n\n";
+        i += 1;
+    }
+    ss << "--" << boundary << "--\n";
+
+    // Build a HTTP request object from our configuration
+    auto request = client->post(configuration, ss.str(), "multipart/mixed");
+
+    try {
+        // Synchronously make the HTTP request
+        // We bind the cancellable callback to #progress_report
+        auto response = request->execute(
+                    std::bind(&Client::progress_report, this, std::placeholders::_1));
+
+        std::cerr << configuration.uri << std::endl;
+
+        // Check that we got a sensible HTTP status code
+        if (response.status != http::Status::ok) {
+            throw std::domain_error(response.body);
+        }
+
+        QString response_body(response.body.c_str());
+        // Is there no way to inspect the header?  We assume that the first line is a boundary marker.
+        QString boundary = response_body.section("\r\n", 0, 0);
+        QStringList response_parts = response_body.split(boundary);
+        // We assume the parts come back in the same order.  This isn't guaranteed.  We could look
+        // at the Content-ID of each part, in which is embedded the index of the original message.
+        // But for right now, this seems to work.
+        for (const QString part : response_parts) {
+            QString payload = part.section("\r\n\r\n", 2, -1);
+            if (payload != "") {
+                QJsonDocument root = QJsonDocument::fromJson(payload.toUtf8());
+                result.emplace_back(parse_email(root.toVariant()));
+            }
+        }
+
+    } catch (net::Error &) {
+    }
+    return result;
+}
+
 Client::Email Client::messages_set_unread(const std::string& id, bool unread) {
     std::string command = unread ? "addLabelIds" : "removeLabelIds";
     std::string payload = "{ \"" + command + "\": [\"UNREAD\"] }";

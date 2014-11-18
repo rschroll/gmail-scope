@@ -49,7 +49,7 @@ include_directories(
 )
 
 set(SCOPE_INSTALL_NAME "com.ubuntu.developer.rschroll.gmail_gmail")
-set(SCOPE_VERSION "0.1.1")
+set(SCOPE_VERSION "0.2.0")
 
 # Do not remove this line, its required for the correct functionality of the Ubuntu-SDK
 set(UBUNTU_MANIFEST_PATH "manifest.json.in" CACHE INTERNAL "Tells QtCreator location and name of the manifest file")

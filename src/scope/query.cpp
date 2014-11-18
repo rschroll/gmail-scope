@@ -93,7 +93,7 @@ const static std::string LOGIN_TEMPLATE =
 namespace {
 
 static std::string trim_subject(const std::string line) {
-    QRegularExpression regex("^ *(?:(?:fwd?|re):? *)*(.*?) *$",
+    QRegularExpression regex("^ *(?:(?:fwd?|re)(?: |:) *)*(.*?) *$",
                              QRegularExpression::CaseInsensitiveOption);
     QRegularExpressionMatch match = regex.match(line.c_str());
     if (match.hasMatch())

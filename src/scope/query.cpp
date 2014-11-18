@@ -152,7 +152,7 @@ bool Query::init_scope(sc::SearchReplyProxy const& reply) {
     thread_messages = config["threading"].get_bool();
     show_snippets = config["snippets"].get_bool();
 
-    sc::OnlineAccountClient oa_client(SCOPE_NAME, "email", "google");
+    sc::OnlineAccountClient oa_client(SCOPE_NAME, SCOPE_NAME, "google");
     if (!client_.authenticated(oa_client)) {
         auto cat = reply->register_category("gmail_login", "", "",
                                             sc::CategoryRenderer(LOGIN_TEMPLATE));

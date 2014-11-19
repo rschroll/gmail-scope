@@ -14,7 +14,9 @@ install(
 # Install the scope images
 install(
   FILES
-    "icon.png"
+    "icon-scope.svg"
+    "logo.gif"
+    "screenshot.png"
   DESTINATION
     "${SCOPE_INSTALL_DIR}"
 )

@@ -447,9 +447,9 @@ Client::EmailList Client::threads_get(const std::string& id) {
     QVariantMap variant = root.toVariant().toMap();
     QVariantList messages = variant["messages"].toList();
 
-    for (const QVariant &i : messages) {
-        result.emplace_back(parse_email(i));
-    }
+    int length = messages.length();
+    for (int i = length-1; i >= 0; i--)
+        result.emplace_back(parse_email(messages[i]));
     return result;
 }
 
@@ -460,9 +460,9 @@ Client::EmailList Client::threads_get_batch(const ThreadList& threads) {
     EmailList result;
     for (const QVariant& var : res_array) {
         QVariantList messages = var.toMap()["messages"].toList();
-        for (const QVariant &i : messages) {
-            result.emplace_back(parse_email(i));
-        }
+        int length = messages.length();
+        for (int i = length-1; i >= 0; i--)
+            result.emplace_back(parse_email(messages[i]));
     }
     return result;
 }

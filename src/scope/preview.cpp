@@ -4,6 +4,7 @@
  * the GPL. See the file LICENSE for full details.
  */
 
+#include <scope/localization.h>
 #include <scope/preview.h>
 #include <api/client.h>
 
@@ -46,18 +47,21 @@ void Preview::run(sc::PreviewReplyProxy const& reply) {
     recipients.add_attribute_mapping("text", "recipients");
 
     sc::PreviewWidget search_header("search header", "header");
-    search_header.add_attribute_value("title", sc::Variant("Find messages"));
+    /// Header above buttons with following two strings
+    search_header.add_attribute_value("title", sc::Variant(_("Find messages")));
 
     sc::PreviewWidget searches("searches", "actions");
     {
         sc::VariantBuilder builder;
         sc::CannedQuery from_query(SCOPE_NAME, "from:" + res["from address"].get_string(), "");
+        std::string from_name = res["from name"].get_string();  // Avoid gettext confusion
         builder.add_tuple({ { "id", sc::Variant("search from") },
-                            { "label", sc::Variant("From " + res["from name"].get_string()) },
+                            /// Argument is name or email address
+                            { "label", sc::Variant(_("From %s", from_name)) },
                             { "uri", sc::Variant(from_query.to_uri()) } });
         sc::CannedQuery thread_query(SCOPE_NAME, "threadid:" + res["threadid"].get_string(), "");
         builder.add_tuple({ { "id", sc::Variant("search thread") },
-                            { "label", sc::Variant("In thread") },
+                            { "label", sc::Variant(_("In thread")) },
                             { "uri", sc::Variant(thread_query.to_uri()) } });
         searches.add_attribute_value("actions", builder.end());
     }
@@ -68,13 +72,14 @@ void Preview::run(sc::PreviewReplyProxy const& reply) {
         reply_name = res["from name"].get_string();
     reply_widget.add_attribute_value("visible", sc::Variant("review"));
     reply_widget.add_attribute_value("required", sc::Variant("review"));
-    reply_widget.add_attribute_value("review-label", sc::Variant("Reply to " + reply_name));
+    /// Argument is name or email address
+    reply_widget.add_attribute_value("review-label", sc::Variant(_("Reply to %s", reply_name)));
 
     sc::PreviewWidget openers("openers", "actions");
     {
         sc::VariantBuilder builder;
         builder.add_tuple({ { "id", sc::Variant("open gmail") },
-                            { "label", sc::Variant("View in Gmail") },
+                            { "label", sc::Variant(_("View in Gmail")) },
                             { "uri", sc::Variant("https://mail.google.com/mail/mu/mp/206/#cv/All Mail/" +
                               res["threadid"].get_string()) }});
         openers.add_attribute_value("actions", builder.end());
@@ -97,12 +102,13 @@ void Preview::run(sc::PreviewReplyProxy const& reply) {
     }
     sc::PreviewWidget modifiers("modifiers", "actions");
     {
-        std::string status = (unread ? "read" : "unread");
         sc::VariantBuilder builder;
-        builder.add_tuple({ { "id", sc::Variant("mark " + status) },
-                            { "label", sc::Variant("Mark " + status) } });
+        builder.add_tuple({ { "id", sc::Variant(unread ? "mark read" : "mark unread") },
+                            { "label", sc::Variant(unread ? _("Mark as read")
+                              : _("Mark as unread")) } });
         builder.add_tuple({ { "id", sc::Variant(trash ? "untrash" : "trash") },
-                            { "label", sc::Variant(trash ? "Remove from trash" : "Move to trash") } });
+                            { "label", sc::Variant(trash ? _("Remove from trash")
+                              : _("Move to trash")) } });
         modifiers.add_attribute_value("actions", builder.end());
     }
 

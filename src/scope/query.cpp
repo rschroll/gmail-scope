@@ -107,12 +107,18 @@ static std::string short_date(std::string input) {
         return input;
     QDateTime now = QDateTime::currentDateTime();
     if (now.date() == email.date())
-        return email.toString("HH:mm").toStdString();
+        /// These strings give short forms of dates and times, depending on how recent they are.
+        /// Use the codes from http://qt-project.org/doc/qt-5/qdatetime.html#fromString-2
+        /// In the past day
+        return email.toString(_("HH:mm")).toStdString();
     if (email.daysTo(now) < 7)
-        return email.toString("dddd").toStdString();
+        /// In the past week
+        return email.toString(_("dddd")).toStdString();
     if (email.daysTo(now) < 365)
-        return email.toString("MMM d").toStdString();
-    return email.toString("MMM d, yyyy").toStdString();
+        /// In the past year
+        return email.toString(_("MMM d")).toStdString();
+    /// More than a year ago
+    return email.toString(_("MMM d, yyyy")).toStdString();
 }
 
 static std::string contacts_line(api::Client::ContactList contacts) {
@@ -157,7 +163,7 @@ bool Query::init_scope(sc::SearchReplyProxy const& reply) {
         auto cat = reply->register_category("gmail_login", "", "",
                                             sc::CategoryRenderer(LOGIN_TEMPLATE));
         sc::CategorisedResult res(cat);
-        res.set_title("Log in with Google");
+        res.set_title(_("Log in with Google"));
         res.set_art("file:///usr/share/icons/suru/apps/scalable/googleplus-symbolic.svg");
 
         oa_client.register_account_login_item(res, query(),
@@ -184,14 +190,14 @@ void Query::run(sc::SearchReplyProxy const& reply) {
 
         // The empty string here is important; it denotes the department to use when none has been
         // selected by the user.
-        sc::Department::SPtr inbox = sc::Department::create("", query, "Inbox");
+        sc::Department::SPtr inbox = sc::Department::create("", query, _("Inbox"));
         api::Client::LabelList labels = client_.get_labels();
         for (const auto label_pair : labels) {
             sc::Department::SPtr dept = sc::Department::create(label_pair.first, query,
                                                                label_pair.second);
             inbox->add_subdepartment(dept);
         }
-        sc::Department::SPtr all_mail = sc::Department::create("ALL_MAIL", query, "All mail");
+        sc::Department::SPtr all_mail = sc::Department::create("ALL_MAIL", query, _("All mail"));
         inbox->add_subdepartment(all_mail);
         reply->register_departments(inbox);
 
@@ -273,13 +279,13 @@ void Query::run(sc::SearchReplyProxy const& reply) {
             res["threadid"] = message.threadId;
 
             std::stringstream ss;
-            ss << "<strong>From:</strong> " << message.header.from.name;
+            ss << "<strong>" << _("From:") << "</strong> " << message.header.from.name;
             std::string to_line = contacts_line(message.header.to);
             if (to_line.length())
-                ss << "<br><strong>To:</strong> " << to_line;
+                ss << "<br><strong>" << _("To:") << "</strong> " << to_line;
             std::string cc_line = contacts_line(message.header.cc);
             if (cc_line.length())
-                ss << "<br><strong>Cc:</strong> " << cc_line;
+                ss << "<br><strong>" << _("Cc:") << "</strong> " << cc_line;
             res["recipients"] = ss.str();
 
             // Push the result

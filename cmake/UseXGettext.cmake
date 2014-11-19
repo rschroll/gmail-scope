@@ -90,7 +90,7 @@ macro(add_translations_catalog)
         QT
         INPUT ${_SOURCES}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        ADD_COMMENTS "TRANSLATORS"
+        ADD_COMMENTS "/"
         KEYWORDS "_" "_:1,2" "N_" "N_:1,2"
         PACKAGE_NAME ${_GETTEXT_PACKAGE}
         COPYRIGHT_HOLDER ${_ARG_COPYRIGHT_HOLDER}

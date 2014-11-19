@@ -8,6 +8,13 @@ inline char * _(const char *__msgid) {
     return dgettext(GETTEXT_PACKAGE, __msgid);
 }
 
+inline std::string _(const char *__msgid, std::string __arg) {
+    char buffer [256];
+    if (snprintf(buffer, 256, _(__msgid), __arg.c_str()) >= 0)
+        return buffer;
+    return std::string();
+}
+
 inline std::string _(const char *__msgid1, const char *__msgid2,
                      unsigned long int __n) {
     char buffer [256];

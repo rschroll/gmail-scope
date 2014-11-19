@@ -11,6 +11,7 @@
 #include <core/net/uri.h>
 
 #include <QJsonDocument>
+#include <QVariantList>
 
 #include <unity/scopes/OnlineAccountClient.h>
 
@@ -113,6 +114,11 @@ protected:
               const core::net::Uri::QueryParameters &parameters,
               const std::string& payload,
               QJsonDocument &root);
+
+    void batch_get(const core::net::Uri::Path &path,
+                   const core::net::Uri::QueryParameters &parameters,
+                   const std::deque<std::string> &ids,
+                   QVariantList &results);
 
     virtual std::string access_token();
 

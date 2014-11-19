@@ -13,7 +13,8 @@ struct Config {
     /*
      * The root of all API request URLs
      */
-    std::string apiroot { "https://www.googleapis.com/gmail/v1" };
+    std::string apidomain { "https://www.googleapis.com" };
+    std::string apiroot { "/gmail/v1" };
 
     /*
      * The custom HTTP user agent string for this library

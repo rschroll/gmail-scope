@@ -27,7 +27,7 @@ public:
     void run(const unity::scopes::SearchReplyProxy &reply) override;
 
 private:
-    bool init_scope(const unity::scopes::SearchReplyProxy &reply);
+    void init_scope();
 
     bool thread_messages;
     bool show_snippets;

@@ -20,12 +20,6 @@ struct Config {
      */
     std::string user_agent { "Gmail Scope (Ubuntu) " VERSION };
 
-    // From the YouTube scope
-    std::string access_token { };
-    std::string client_id { };
-    std::string client_secret { };
-    bool authenticated = false;
-
     /*
      * Cached values
      */

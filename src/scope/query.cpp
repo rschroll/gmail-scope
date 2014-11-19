@@ -151,33 +151,16 @@ void Query::cancelled() {
     client_.cancel();
 }
 
-bool Query::init_scope(sc::SearchReplyProxy const& reply) {
+void Query::init_scope() {
     sc::VariantMap config = settings();
     if (config.empty())
         std::cerr << "No config!" << std::endl;
     thread_messages = config["threading"].get_bool();
     show_snippets = config["snippets"].get_bool();
-
-    sc::OnlineAccountClient oa_client(SCOPE_NAME, SCOPE_NAME, "google");
-    if (!client_.authenticated(oa_client)) {
-        auto cat = reply->register_category("gmail_login", "", "",
-                                            sc::CategoryRenderer(LOGIN_TEMPLATE));
-        sc::CategorisedResult res(cat);
-        res.set_title(_("Log in with Google"));
-        res.set_art("file:///usr/share/icons/suru/apps/scalable/googleplus-symbolic.svg");
-
-        oa_client.register_account_login_item(res, query(),
-                                              sc::OnlineAccountClient::InvalidateResults,
-                                              sc::OnlineAccountClient::DoNothing);
-        reply->push(res);
-        return false;
-    }
-    return true;
 }
 
 void Query::run(sc::SearchReplyProxy const& reply) {
-    if (!init_scope(reply))
-        return;
+    init_scope();
 
     try {
         const sc::CannedQuery &query(sc::SearchQueryBase::query());
@@ -294,6 +277,19 @@ void Query::run(sc::SearchReplyProxy const& reply) {
                 return;
             }
         }
+
+    } catch (std::runtime_error &) {
+        sc::OnlineAccountClient oa_client(SCOPE_NAME, SCOPE_NAME, "google");
+        auto cat = reply->register_category("gmail_login", "", "",
+                                            sc::CategoryRenderer(LOGIN_TEMPLATE));
+        sc::CategorisedResult res(cat);
+        res.set_title(_("Log in with Google"));
+        res.set_art("file:///usr/share/icons/suru/apps/scalable/googleplus-symbolic.svg");
+
+        oa_client.register_account_login_item(res, query(),
+                                              sc::OnlineAccountClient::InvalidateResults,
+                                              sc::OnlineAccountClient::DoNothing);
+        reply->push(res);
 
     } catch (std::domain_error &e) {
         // Handle exceptions being thrown by the client API

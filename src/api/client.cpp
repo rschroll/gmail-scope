@@ -7,6 +7,8 @@
 #include <api/client.h>
 #include <trojita/Encoders.h>
 
+#include <unity/scopes/OnlineAccountClient.h>
+
 #include <core/net/error.h>
 #include <core/net/http/client.h>
 #include <core/net/http/content_type.h>
@@ -20,6 +22,7 @@
 
 namespace http = core::net::http;
 namespace net = core::net;
+namespace sc = unity::scopes;
 
 using namespace api;
 
@@ -229,12 +232,7 @@ void Client::get(const net::Uri::Path &path,
     net::Uri uri = net::make_uri(config_->apiroot, path, parameters);
     configuration.uri = client->uri_to_string(uri);
 
-    if (!config_->authenticated) {
-        std::cerr << "Not authenticated!" << std::endl;
-        return;
-    }
-
-    configuration.header.add("Authorization", "Bearer " + config_->access_token);
+    configuration.header.add("Authorization", "Bearer " + access_token());
     configuration.header.add("User-Agent", config_->user_agent);
 
     // Build a HTTP request object from our configuration
@@ -271,12 +269,7 @@ void Client::post(const net::Uri::Path& path, const net::Uri::QueryParameters& p
     net::Uri uri = net::make_uri(config_->apiroot, path, parameters);
     configuration.uri = client->uri_to_string(uri);
 
-    if (!config_->authenticated) {
-        std::cerr << "Not authenticated!" << std::endl;
-        return;
-    }
-
-    configuration.header.add("Authorization", "Bearer " + config_->access_token);
+    configuration.header.add("Authorization", "Bearer " + access_token());
     configuration.header.add("User-Agent", config_->user_agent);
     configuration.header.add("Content-Type", "application/json");
 
@@ -343,13 +336,8 @@ Client::EmailList Client::messages_get_batch(const EmailList& messages) {
     http::Request::Configuration configuration;
     configuration.uri = "https://www.googleapis.com/batch";
 
-    if (!config_->authenticated) {
-        std::cerr << "Not authenticated!" << std::endl;
-        return result;
-    }
-
     std::string boundary = "batch_boundary_fnord";
-    configuration.header.add("Authorization", "Bearer " + config_->access_token);
+    configuration.header.add("Authorization", "Bearer " + access_token());
     configuration.header.add("User-Agent", config_->user_agent);
     configuration.header.add("Content-Type", "multipart/mixed; boundary=" + boundary);
 
@@ -499,20 +487,13 @@ Client::LabelList Client::get_labels() {
     return config_->labels;
 }
 
-bool Client::authenticated(unity::scopes::OnlineAccountClient& oa_client) {
-    if (config_->authenticated)
-        return true;
-
+std::string Client::access_token() {
+    sc::OnlineAccountClient oa_client(SCOPE_NAME, SCOPE_NAME, "google");
     for (auto const& status : oa_client.get_service_statuses()) {
-        if (status.service_authenticated) {
-            config_->authenticated = true;
-            config_->access_token = status.access_token;
-            config_->client_id = status.client_id;
-            config_->client_secret = status.client_secret;
-            break;
-        }
+        if (status.service_authenticated)
+            return status.access_token;
     }
-    return config_->authenticated;
+    throw std::runtime_error("Could not authenticate");
 }
 
 http::Request::Progress::Next Client::progress_report(

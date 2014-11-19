@@ -75,8 +75,6 @@ public:
      * Public methods
      */
 
-    virtual bool authenticated(unity::scopes::OnlineAccountClient &oa_client);
-
     virtual EmailList messages_list(const std::string &query, const std::string &label_id);
 
     virtual Email messages_get(const std::string &id, bool body);
@@ -115,6 +113,9 @@ protected:
               const core::net::Uri::QueryParameters &parameters,
               const std::string& payload,
               QJsonDocument &root);
+
+    virtual std::string access_token();
+
     /**
      * Progress callback that allows the query to cancel pending HTTP requests.
      */

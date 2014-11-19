@@ -198,13 +198,14 @@ void Query::run(sc::SearchReplyProxy const& reply) {
                 else if (label_id == "ALL_MAIL")
                     label_id = "";
             }
-            messages = client_.messages_list(query_string, label_id);
-        }
 
-        if (!messages.empty()) {
-            // Threads already include full messages, searches don't
-            if (messages[0].snippet == "")
+            if (thread_messages) {
+                api::Client::ThreadList threads = client_.threads_list(query_string, label_id);
+                messages = client_.threads_get_batch(threads);
+            } else {
+                messages = client_.messages_list(query_string, label_id);
                 messages = client_.messages_get_batch(messages);
+            }
         }
 
         auto single_cat = reply->register_category("messages", "", "",

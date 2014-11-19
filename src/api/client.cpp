@@ -422,6 +422,23 @@ Client::Email Client::messages_untrash(const std::string& id) {
     return parse_email(root.toVariant());
 }
 
+Client::ThreadList Client::threads_list(const std::string& query, const std::string& label_id) {
+    QJsonDocument root;
+    net::Uri::QueryParameters params = { { "q", query }, { "maxResults", "12" } };
+    if (label_id != "")
+        params.emplace_back("labelIds", label_id);
+    get( { "users", "me", "threads" }, params, root);
+
+    ThreadList result;
+    QVariantMap variant = root.toVariant().toMap();
+    QVariantList threads = variant["threads"].toList();
+
+    for (const QVariant &thread : threads) {
+        result.emplace_back(thread.toMap()["id"].toString().toStdString());
+    }
+    return result;
+}
+
 Client::EmailList Client::threads_get(const std::string& id) {
     QJsonDocument root;
     get({ "users", "me", "threads", id }, metadata_params(), root);
@@ -432,6 +449,20 @@ Client::EmailList Client::threads_get(const std::string& id) {
 
     for (const QVariant &i : messages) {
         result.emplace_back(parse_email(i));
+    }
+    return result;
+}
+
+Client::EmailList Client::threads_get_batch(const ThreadList& threads) {
+    QVariantList res_array;
+    batch_get({ "users", "me", "threads" }, metadata_params(), threads, res_array);
+
+    EmailList result;
+    for (const QVariant& var : res_array) {
+        QVariantList messages = var.toMap()["messages"].toList();
+        for (const QVariant &i : messages) {
+            result.emplace_back(parse_email(i));
+        }
     }
     return result;
 }

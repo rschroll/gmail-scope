@@ -155,8 +155,12 @@ void Query::init_scope() {
     sc::VariantMap config = settings();
     if (config.empty())
         std::cerr << "No config!" << std::endl;
-    thread_messages = config["threading"].get_bool();
-    show_snippets = config["snippets"].get_bool();
+    int view = config["messageView"].get_int();
+    // 1: Threaded view
+    // 2: Individual
+    // 3: Individual with snippets
+    thread_messages = (view == 0);
+    show_snippets = (view != 1);
 }
 
 void Query::run(sc::SearchReplyProxy const& reply) {

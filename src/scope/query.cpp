@@ -40,7 +40,8 @@ const static std::string MESSAGE_TEMPLATE =
         "template": {
         "category-layout": "vertical-journal",
         "card-layout": "horizontal",
-        "card-size": "38"
+        "card-size": "38",
+        "collapsed-rows": 0
         },
         "components": {
         "title": "title",
@@ -59,7 +60,8 @@ const static std::string THREADED_TEMPLATE =
         "template": {
         "category-layout": "vertical-journal",
         "card-layout": "horizontal",
-        "card-size": "38"
+        "card-size": "38",
+        "collapsed-rows": 3
         },
         "components": {
         "title": "title",
@@ -83,6 +85,23 @@ const static std::string LOGIN_TEMPLATE =
         "components": {
         "title": "title",
         "mascot": "art"
+        }
+        }
+        )";
+
+const static std::string MORE_TEMPLATE =
+        R"(
+{
+        "schema-version": 1,
+        "template": {
+        "category-layout": "grid",
+        "card-layout": "vertical",
+        "card-size": "medium",
+        "card-background": "color:///#dd4814"
+        },
+        "components": {
+        "title": "title",
+        "emblem": "art"
         }
         }
         )";
@@ -169,6 +188,7 @@ void Query::run(sc::SearchReplyProxy const& reply) {
     try {
         const sc::CannedQuery &query(sc::SearchQueryBase::query());
         std::string query_string = alg::trim_copy(query.query_string());
+        std::string dept_id = query.department_id();
         std::string prefix = "";
         size_t sep = query_string.find(':');
         if (sep != std::string::npos) {
@@ -189,14 +209,22 @@ void Query::run(sc::SearchReplyProxy const& reply) {
         reply->register_departments(inbox);
 
         api::Client::EmailList messages;
+        std::string next;
         if (prefix == "threadid") {
             messages = client_.threads_get(query_string.substr(sep+1, std::string::npos));
             thread_messages = true;
         } else {
-            std::string label_id = "";
+            std::string token = "";
+            if (prefix == "more") {
+                size_t sep1 = query_string.find("~~");
+                size_t sep2 = query_string.rfind("~~");
+                dept_id = query_string.substr(sep1+2, sep2 - (sep1+2));
+                token = query_string.substr(sep2+2, std::string::npos);
+                query_string = query_string.substr(sep+1, sep1 - (sep+1));
+            }
+            std::string label_id = dept_id;
             if (query_string.empty()) {
                 // We only get department info for empty query strings
-                label_id = query.department_id();
                 if (label_id == "")
                     label_id = "INBOX";
                 else if (label_id == "ALL_MAIL")
@@ -204,11 +232,13 @@ void Query::run(sc::SearchReplyProxy const& reply) {
             }
 
             if (thread_messages) {
-                api::Client::ThreadList threads = client_.threads_list(query_string, label_id);
-                messages = client_.threads_get_batch(threads);
+                api::Client::ThreadListRes res = client_.threads_list(query_string, label_id, token);
+                messages = client_.threads_get_batch(res.first);
+                next = res.second;
             } else {
-                messages = client_.messages_list(query_string, label_id);
-                messages = client_.messages_get_batch(messages);
+                api::Client::EmailListRes res = client_.messages_list(query_string, label_id, token);
+                messages = client_.messages_get_batch(res.first);
+                next = res.second;
             }
         }
 
@@ -281,6 +311,17 @@ void Query::run(sc::SearchReplyProxy const& reply) {
                 // If the push fails, it means the query has been cancelled.  So quit.
                 return;
             }
+        }
+
+        if (!next.empty()) {
+            auto cat = reply->register_category("more", "", "",
+                                                sc::CategoryRenderer(MORE_TEMPLATE));
+            sc::CategorisedResult res(cat);
+            res.set_title(_("More results..."));
+            res.set_art("file:///usr/share/icons/suru/actions/scalable/go-next.svg");
+            sc::CannedQuery q(SCOPE_NAME, "more:" + query_string + "~~" + dept_id + "~~" + next, "");
+            res.set_uri(q.to_uri());
+            reply->push(res);
         }
 
     } catch (std::runtime_error &) {

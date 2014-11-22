@@ -62,9 +62,13 @@ public:
 
     typedef std::deque<Email> EmailList;
 
+    typedef std::pair<EmailList, std::string> EmailListRes;
+
     typedef std::deque<std::pair<std::string, std::string>> LabelList;
 
     typedef std::deque<std::string> ThreadList;
+
+    typedef std::pair<ThreadList, std::string> ThreadListRes;
 
     /**
      * Constructor / destructor
@@ -78,7 +82,8 @@ public:
      * Public methods
      */
 
-    virtual EmailList messages_list(const std::string &query, const std::string &label_id);
+    virtual EmailListRes messages_list(const std::string &query, const std::string &label_id,
+                                       const std::string &token);
 
     virtual Email messages_get(const std::string &id, bool body);
 
@@ -90,7 +95,8 @@ public:
 
     virtual Email messages_untrash(const std::string& id);
 
-    virtual ThreadList threads_list(const std::string& query, const std::string& label_id);
+    virtual ThreadListRes threads_list(const std::string& query, const std::string& label_id,
+                                       const std::string& token);
 
     virtual EmailList threads_get(const std::string& id);
 

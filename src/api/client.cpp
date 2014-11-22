@@ -358,9 +358,10 @@ void Client::batch_get(const net::Uri::Path &path, const net::Uri::QueryParamete
     }
 }
 
-Client::EmailList Client::messages_list(const std::string& query, const std::string& label_id) {
+Client::EmailListRes Client::messages_list(const std::string& query, const std::string& label_id,
+                                           const std::string& token) {
     QJsonDocument root;
-    net::Uri::QueryParameters params = { { "q", query }, { "maxResults", "50" } };
+    net::Uri::QueryParameters params = { { "q", query }, { "maxResults", "50" }, { "pageToken", token } };
     if (label_id != "")
         params.emplace_back("labelIds", label_id);
     get( { "users", "me", "messages" }, params, root);
@@ -372,7 +373,7 @@ Client::EmailList Client::messages_list(const std::string& query, const std::str
     for (const QVariant &i : messages) {
         result.emplace_back(parse_email(i));
     }
-    return result;
+    return std::make_pair(result, variant["nextPageToken"].toString().toStdString());
 }
 
 Client::Email Client::messages_get(const std::string& id, bool body = false) {
@@ -422,9 +423,10 @@ Client::Email Client::messages_untrash(const std::string& id) {
     return parse_email(root.toVariant());
 }
 
-Client::ThreadList Client::threads_list(const std::string& query, const std::string& label_id) {
+Client::ThreadListRes Client::threads_list(const std::string& query, const std::string& label_id,
+                                           const std::string &token) {
     QJsonDocument root;
-    net::Uri::QueryParameters params = { { "q", query }, { "maxResults", "12" } };
+    net::Uri::QueryParameters params = { { "q", query }, { "maxResults", "12" }, { "pageToken", token } };
     if (label_id != "")
         params.emplace_back("labelIds", label_id);
     get( { "users", "me", "threads" }, params, root);
@@ -436,7 +438,7 @@ Client::ThreadList Client::threads_list(const std::string& query, const std::str
     for (const QVariant &thread : threads) {
         result.emplace_back(thread.toMap()["id"].toString().toStdString());
     }
-    return result;
+    return std::make_pair(result, variant["nextPageToken"].toString().toStdString());
 }
 
 Client::EmailList Client::threads_get(const std::string& id) {

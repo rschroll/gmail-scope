@@ -1,12 +1,3 @@
-
-# Put the ini file in the build directory next to the scope
-# .so file so test tools can find both easily.
-configure_file(
-  "${CMAKE_SOURCE_DIR}/data/com.ubuntu.developer.rschroll.gmail_gmail.ini"
-  "${CMAKE_CURRENT_BINARY_DIR}/com.ubuntu.developer.rschroll.gmail_gmail.ini"
-  @ONLY
-)
-
 configure_file(
   "${CMAKE_SOURCE_DIR}/data/logo.gif"
   "${CMAKE_CURRENT_BINARY_DIR}/logo.gif"

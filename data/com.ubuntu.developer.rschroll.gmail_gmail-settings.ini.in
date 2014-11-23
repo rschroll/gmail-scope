@@ -1,0 +1,9 @@
+[from]
+type=string
+_displayName=Name
+
+[messageView]
+type=list
+_displayName=View messages...
+_displayValues=In threads;Individually;Individually with snippets
+defaultValue=0

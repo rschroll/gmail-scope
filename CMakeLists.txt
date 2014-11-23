@@ -23,6 +23,7 @@ add_definitions(
 
 include(GNUInstallDirs)
 find_package(PkgConfig)
+find_package(Intltool)
 
 # We depend on Boost for string trimming
 find_package(

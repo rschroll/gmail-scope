@@ -1,0 +1,4 @@
+[type: gettext/ini] data/com.ubuntu.developer.rschroll.gmail_gmail.ini.in
+[type: gettext/ini] data/com.ubuntu.developer.rschroll.gmail_gmail-settings.ini.in
+src/scope/query.cpp
+src/scope/preview.cpp

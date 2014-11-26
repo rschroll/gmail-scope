@@ -1,0 +1,125 @@
+# Ukrainian translation for gmail-scope
+# Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
+# This file is distributed under the same license as the gmail-scope package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gmail-scope\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2014-11-23 02:41-0500\n"
+"PO-Revision-Date: 2014-11-23 19:55+0000\n"
+"Last-Translator: Yuri Chornoivan <yurchor@gmail.com>\n"
+"Language-Team: Ukrainian <uk@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2014-11-26 01:00+0000\n"
+"X-Generator: Launchpad (build 17252)\n"
+
+#: ../data/com.ubuntu.developer.rschroll.gmail_gmail.ini.in.h:1
+msgid "Unofficial Gmail scope"
+msgstr "Неофіційна область Gmail"
+
+#: ../data/com.ubuntu.developer.rschroll.gmail_gmail-settings.ini.in.h:1
+msgid "Name"
+msgstr "Назва"
+
+#: ../data/com.ubuntu.developer.rschroll.gmail_gmail-settings.ini.in.h:2
+msgid "View messages..."
+msgstr "Переглянути повідомлення…"
+
+#: ../data/com.ubuntu.developer.rschroll.gmail_gmail-settings.ini.in.h:3
+msgid "In threads;Individually;Individually with snippets"
+msgstr "гілками;окремо;окремо із фрагментами"
+
+#. / These strings give short forms of dates and times, depending on how recent they are.
+#. / Use the codes from http://qt-project.org/doc/qt-5/qdatetime.html#fromString-2
+#. / In the past day
+#: ../src/scope/query.cpp:132
+msgid "HH:mm"
+msgstr "HH:mm"
+
+#. / In the past week
+#: ../src/scope/query.cpp:135
+msgid "dddd"
+msgstr "dddd"
+
+#. / In the past year
+#: ../src/scope/query.cpp:138
+msgid "MMM d"
+msgstr "d MMM"
+
+#. / More than a year ago
+#: ../src/scope/query.cpp:140
+msgid "MMM d, yyyy"
+msgstr "d-MMM-yyyy"
+
+#: ../src/scope/query.cpp:200
+msgid "Inbox"
+msgstr "Вхідні"
+
+#: ../src/scope/query.cpp:207
+msgid "All mail"
+msgstr "Уся пошта"
+
+#: ../src/scope/query.cpp:300
+msgid "From:"
+msgstr "Від:"
+
+#: ../src/scope/query.cpp:303
+msgid "To:"
+msgstr "Кому:"
+
+#: ../src/scope/query.cpp:306
+msgid "Cc:"
+msgstr "Копія:"
+
+#: ../src/scope/query.cpp:320
+msgid "More results..."
+msgstr "Інші результати…"
+
+#: ../src/scope/query.cpp:332
+msgid "Log in with Google"
+msgstr "Увійти за допомогою Google"
+
+#. / Header above buttons with following two strings
+#: ../src/scope/preview.cpp:51
+msgid "Find messages"
+msgstr "Пошук повідомлень"
+
+#. / Argument is name or email address
+#: ../src/scope/preview.cpp:60
+#, c-format
+msgid "From %s"
+msgstr "Від %s"
+
+#: ../src/scope/preview.cpp:64
+msgid "In thread"
+msgstr "У гілці"
+
+#. / Argument is name or email address
+#: ../src/scope/preview.cpp:76
+#, c-format
+msgid "Reply to %s"
+msgstr "Відповідати %s"
+
+#: ../src/scope/preview.cpp:82
+msgid "View in Gmail"
+msgstr "Переглянути на Gmail"
+
+#: ../src/scope/preview.cpp:107
+msgid "Mark as read"
+msgstr "Позначити як прочитане"
+
+#: ../src/scope/preview.cpp:108
+msgid "Mark as unread"
+msgstr "Позначити як непрочитане"
+
+#: ../src/scope/preview.cpp:110
+msgid "Remove from trash"
+msgstr "Вилучити зі смітника"
+
+#: ../src/scope/preview.cpp:111
+msgid "Move to trash"
+msgstr "Пересунути до смітника"

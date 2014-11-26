@@ -1,0 +1,125 @@
+# Chinese (Simplified) translation for gmail-scope
+# Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
+# This file is distributed under the same license as the gmail-scope package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gmail-scope\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2014-11-23 02:41-0500\n"
+"PO-Revision-Date: 2014-11-24 07:59+0000\n"
+"Last-Translator: shijing <jingshi@ubuntukylin.com>\n"
+"Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2014-11-26 01:00+0000\n"
+"X-Generator: Launchpad (build 17252)\n"
+
+#: ../data/com.ubuntu.developer.rschroll.gmail_gmail.ini.in.h:1
+msgid "Unofficial Gmail scope"
+msgstr "非官方 Gmail scope"
+
+#: ../data/com.ubuntu.developer.rschroll.gmail_gmail-settings.ini.in.h:1
+msgid "Name"
+msgstr "姓名"
+
+#: ../data/com.ubuntu.developer.rschroll.gmail_gmail-settings.ini.in.h:2
+msgid "View messages..."
+msgstr "查看消息。"
+
+#: ../data/com.ubuntu.developer.rschroll.gmail_gmail-settings.ini.in.h:3
+msgid "In threads;Individually;Individually with snippets"
+msgstr "会话视图;按消息排列;带摘要的消息"
+
+#. / These strings give short forms of dates and times, depending on how recent they are.
+#. / Use the codes from http://qt-project.org/doc/qt-5/qdatetime.html#fromString-2
+#. / In the past day
+#: ../src/scope/query.cpp:132
+msgid "HH:mm"
+msgstr "HH:mm"
+
+#. / In the past week
+#: ../src/scope/query.cpp:135
+msgid "dddd"
+msgstr "dddd"
+
+#. / In the past year
+#: ../src/scope/query.cpp:138
+msgid "MMM d"
+msgstr "M月d日"
+
+#. / More than a year ago
+#: ../src/scope/query.cpp:140
+msgid "MMM d, yyyy"
+msgstr "yyyy年M月d日"
+
+#: ../src/scope/query.cpp:200
+msgid "Inbox"
+msgstr "收件箱"
+
+#: ../src/scope/query.cpp:207
+msgid "All mail"
+msgstr "所有邮件"
+
+#: ../src/scope/query.cpp:300
+msgid "From:"
+msgstr "发件人："
+
+#: ../src/scope/query.cpp:303
+msgid "To:"
+msgstr "收件人："
+
+#: ../src/scope/query.cpp:306
+msgid "Cc:"
+msgstr "抄送："
+
+#: ../src/scope/query.cpp:320
+msgid "More results..."
+msgstr "更多结果..."
+
+#: ../src/scope/query.cpp:332
+msgid "Log in with Google"
+msgstr "登录 Google"
+
+#. / Header above buttons with following two strings
+#: ../src/scope/preview.cpp:51
+msgid "Find messages"
+msgstr "查找邮件"
+
+#. / Argument is name or email address
+#: ../src/scope/preview.cpp:60
+#, c-format
+msgid "From %s"
+msgstr "来自 %s"
+
+#: ../src/scope/preview.cpp:64
+msgid "In thread"
+msgstr "按话题"
+
+#. / Argument is name or email address
+#: ../src/scope/preview.cpp:76
+#, c-format
+msgid "Reply to %s"
+msgstr "回复 %s"
+
+#: ../src/scope/preview.cpp:82
+msgid "View in Gmail"
+msgstr "在 Gmail 中查看"
+
+#: ../src/scope/preview.cpp:107
+msgid "Mark as read"
+msgstr "标记为已读"
+
+#: ../src/scope/preview.cpp:108
+msgid "Mark as unread"
+msgstr "标记为未读"
+
+#: ../src/scope/preview.cpp:110
+msgid "Remove from trash"
+msgstr "彻底删除"
+
+#: ../src/scope/preview.cpp:111
+msgid "Move to trash"
+msgstr "移至回收站"

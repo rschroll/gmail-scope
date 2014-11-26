@@ -1,0 +1,125 @@
+# Hungarian translation for gmail-scope
+# Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
+# This file is distributed under the same license as the gmail-scope package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gmail-scope\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2014-11-23 02:41-0500\n"
+"PO-Revision-Date: 2014-11-24 07:07+0000\n"
+"Last-Translator: Richard Somlói <ricsipontaz@gmail.com>\n"
+"Language-Team: Hungarian <hu@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2014-11-26 01:00+0000\n"
+"X-Generator: Launchpad (build 17252)\n"
+
+#: ../data/com.ubuntu.developer.rschroll.gmail_gmail.ini.in.h:1
+msgid "Unofficial Gmail scope"
+msgstr "Nem hivatalos Gmail lencse"
+
+#: ../data/com.ubuntu.developer.rschroll.gmail_gmail-settings.ini.in.h:1
+msgid "Name"
+msgstr "Név"
+
+#: ../data/com.ubuntu.developer.rschroll.gmail_gmail-settings.ini.in.h:2
+msgid "View messages..."
+msgstr "Üzenetek megtekintése…"
+
+#: ../data/com.ubuntu.developer.rschroll.gmail_gmail-settings.ini.in.h:3
+msgid "In threads;Individually;Individually with snippets"
+msgstr ""
+
+#. / These strings give short forms of dates and times, depending on how recent they are.
+#. / Use the codes from http://qt-project.org/doc/qt-5/qdatetime.html#fromString-2
+#. / In the past day
+#: ../src/scope/query.cpp:132
+msgid "HH:mm"
+msgstr "HH.mm"
+
+#. / In the past week
+#: ../src/scope/query.cpp:135
+msgid "dddd"
+msgstr "ddd"
+
+#. / In the past year
+#: ../src/scope/query.cpp:138
+msgid "MMM d"
+msgstr "MMM d"
+
+#. / More than a year ago
+#: ../src/scope/query.cpp:140
+msgid "MMM d, yyyy"
+msgstr "yyyy MMM d"
+
+#: ../src/scope/query.cpp:200
+msgid "Inbox"
+msgstr "Beérkező levelek"
+
+#: ../src/scope/query.cpp:207
+msgid "All mail"
+msgstr "Minden levél"
+
+#: ../src/scope/query.cpp:300
+msgid "From:"
+msgstr "Feladó:"
+
+#: ../src/scope/query.cpp:303
+msgid "To:"
+msgstr "Címzett:"
+
+#: ../src/scope/query.cpp:306
+msgid "Cc:"
+msgstr "Másolat:"
+
+#: ../src/scope/query.cpp:320
+msgid "More results..."
+msgstr "További találatok…"
+
+#: ../src/scope/query.cpp:332
+msgid "Log in with Google"
+msgstr "Bejelentkezés Google fiókkal"
+
+#. / Header above buttons with following two strings
+#: ../src/scope/preview.cpp:51
+msgid "Find messages"
+msgstr "Üzenetek keresése"
+
+#. / Argument is name or email address
+#: ../src/scope/preview.cpp:60
+#, c-format
+msgid "From %s"
+msgstr "Feladó: %s"
+
+#: ../src/scope/preview.cpp:64
+msgid "In thread"
+msgstr ""
+
+#. / Argument is name or email address
+#: ../src/scope/preview.cpp:76
+#, c-format
+msgid "Reply to %s"
+msgstr "Válasz ide: %s"
+
+#: ../src/scope/preview.cpp:82
+msgid "View in Gmail"
+msgstr "Megtekintés Gmail-ben"
+
+#: ../src/scope/preview.cpp:107
+msgid "Mark as read"
+msgstr "Megjelölés olvasottként"
+
+#: ../src/scope/preview.cpp:108
+msgid "Mark as unread"
+msgstr "Megjelölés olvasatlanként"
+
+#: ../src/scope/preview.cpp:110
+msgid "Remove from trash"
+msgstr "Eltávolítás a kukából"
+
+#: ../src/scope/preview.cpp:111
+msgid "Move to trash"
+msgstr "Áthelyezés a kukába"

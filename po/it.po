@@ -1,0 +1,125 @@
+# Italian translation for gmail-scope
+# Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
+# This file is distributed under the same license as the gmail-scope package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gmail-scope\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2014-11-23 02:41-0500\n"
+"PO-Revision-Date: 2014-11-25 09:46+0000\n"
+"Last-Translator: Claudio Arseni <claudio.arseni@gmail.com>\n"
+"Language-Team: Italian <it@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2014-11-26 01:00+0000\n"
+"X-Generator: Launchpad (build 17252)\n"
+
+#: ../data/com.ubuntu.developer.rschroll.gmail_gmail.ini.in.h:1
+msgid "Unofficial Gmail scope"
+msgstr "Scope di Gmail non ufficiale"
+
+#: ../data/com.ubuntu.developer.rschroll.gmail_gmail-settings.ini.in.h:1
+msgid "Name"
+msgstr "Nome"
+
+#: ../data/com.ubuntu.developer.rschroll.gmail_gmail-settings.ini.in.h:2
+msgid "View messages..."
+msgstr "Mostra i messaggi..."
+
+#: ../data/com.ubuntu.developer.rschroll.gmail_gmail-settings.ini.in.h:3
+msgid "In threads;Individually;Individually with snippets"
+msgstr "Per argomento;Singolarmente;Singolarmente con frammenti"
+
+#. / These strings give short forms of dates and times, depending on how recent they are.
+#. / Use the codes from http://qt-project.org/doc/qt-5/qdatetime.html#fromString-2
+#. / In the past day
+#: ../src/scope/query.cpp:132
+msgid "HH:mm"
+msgstr "HH:mm"
+
+#. / In the past week
+#: ../src/scope/query.cpp:135
+msgid "dddd"
+msgstr "dddd"
+
+#. / In the past year
+#: ../src/scope/query.cpp:138
+msgid "MMM d"
+msgstr "d MMM"
+
+#. / More than a year ago
+#: ../src/scope/query.cpp:140
+msgid "MMM d, yyyy"
+msgstr "d MMM yyyy"
+
+#: ../src/scope/query.cpp:200
+msgid "Inbox"
+msgstr "Posta in arrivo"
+
+#: ../src/scope/query.cpp:207
+msgid "All mail"
+msgstr "Tutti i messaggi"
+
+#: ../src/scope/query.cpp:300
+msgid "From:"
+msgstr "Da:"
+
+#: ../src/scope/query.cpp:303
+msgid "To:"
+msgstr "A:"
+
+#: ../src/scope/query.cpp:306
+msgid "Cc:"
+msgstr "Cc:"
+
+#: ../src/scope/query.cpp:320
+msgid "More results..."
+msgstr "Altri risultati..."
+
+#: ../src/scope/query.cpp:332
+msgid "Log in with Google"
+msgstr "Accedi con Google"
+
+#. / Header above buttons with following two strings
+#: ../src/scope/preview.cpp:51
+msgid "Find messages"
+msgstr "Trova messaggi"
+
+#. / Argument is name or email address
+#: ../src/scope/preview.cpp:60
+#, c-format
+msgid "From %s"
+msgstr "Da %s"
+
+#: ../src/scope/preview.cpp:64
+msgid "In thread"
+msgstr "Per argomento"
+
+#. / Argument is name or email address
+#: ../src/scope/preview.cpp:76
+#, c-format
+msgid "Reply to %s"
+msgstr "Rispondi a %s"
+
+#: ../src/scope/preview.cpp:82
+msgid "View in Gmail"
+msgstr "Mostra in Gmail"
+
+#: ../src/scope/preview.cpp:107
+msgid "Mark as read"
+msgstr "Segna come già letto"
+
+#: ../src/scope/preview.cpp:108
+msgid "Mark as unread"
+msgstr "Segna come da leggere"
+
+#: ../src/scope/preview.cpp:110
+msgid "Remove from trash"
+msgstr "Rimuovi dal cestino"
+
+#: ../src/scope/preview.cpp:111
+msgid "Move to trash"
+msgstr "Sposta nel cestino"

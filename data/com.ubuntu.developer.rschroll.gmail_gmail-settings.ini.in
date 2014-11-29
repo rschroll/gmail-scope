@@ -5,5 +5,6 @@ _displayName=Name
 [messageView]
 type=list
 _displayName=View messages...
+#/ Three options for viewing messages.  Translate each individually and join with semicolons.
 _displayValues=In threads;Individually;Individually with snippets
 defaultValue=0

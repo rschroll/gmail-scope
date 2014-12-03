@@ -1,7 +1,7 @@
 Gmail Scope for Unity8
 ======================
-It's the new hip way to read email.  This scope is in an early-beta
-state.  Some things may break.  Use with caution.
+It's the new hip way to read email.  This scope requres Unity8 and
+Ubuntu Online Accounts.
 
 Building
 --------

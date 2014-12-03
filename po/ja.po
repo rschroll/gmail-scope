@@ -1,39 +1,38 @@
-# Gaelic; Scottish translation for gmail-scope
+# Japanese translation for gmail-scope
 # Copyright (c) 2014 Rosetta Contributors and Canonical Ltd 2014
 # This file is distributed under the same license as the gmail-scope package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2014.
-# GunChleoc <fios@foramnagaidhlig.net>, 2014.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: gmail-scope\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2014-11-28 23:48-0500\n"
-"PO-Revision-Date: 2014-11-27 14:02+0000\n"
-"Last-Translator: Akerbeltz <fios@akerbeltz.org>\n"
-"Language-Team: Fòram na Gàidhlig\n"
+"PO-Revision-Date: 2014-11-27 13:32+0000\n"
+"Last-Translator: Shushi Kurose <md81bird@hitaki.net>\n"
+"Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Launchpad-Export-Date: 2014-12-03 19:20+0000\n"
 "X-Generator: Launchpad (build 17274)\n"
-"Language: gd\n"
 
 #: ../data/com.ubuntu.developer.rschroll.gmail_gmail.ini.in.h:1
 msgid "Unofficial Gmail scope"
-msgstr "Sgòp Gmail neo-oifigeil"
+msgstr ""
 
 #: ../data/com.ubuntu.developer.rschroll.gmail_gmail-settings.ini.in.h:1
 msgid "Name"
-msgstr "Ainm"
+msgstr "名前"
 
 #: ../data/com.ubuntu.developer.rschroll.gmail_gmail-settings.ini.in.h:2
 msgid "View messages..."
-msgstr "Seall na teachdaireachdan..."
+msgstr ""
 
 #. / Three options for viewing messages.  Translate each individually and join with semicolons.
 #: ../data/com.ubuntu.developer.rschroll.gmail_gmail-settings.ini.in.h:4
 msgid "In threads;Individually;Individually with snippets"
-msgstr "Ann an snàithean;Fa leth;Fa leth le snippets"
+msgstr ""
 
 #. / These strings give short forms of dates and times, depending on how recent they are.
 #. / Use the codes from http://qt-project.org/doc/qt-5/qdatetime.html#fromString-2
@@ -50,28 +49,28 @@ msgstr "dddd"
 #. / In the past year
 #: ../src/scope/query.cpp:138
 msgid "MMM d"
-msgstr "d MMM"
+msgstr "M月d日"
 
 #. / More than a year ago
 #: ../src/scope/query.cpp:140
 msgid "MMM d, yyyy"
-msgstr "d MMM yyyy"
+msgstr "yyyy年M月d日"
 
 #: ../src/scope/query.cpp:200
 msgid "Inbox"
-msgstr "Bogsa a-steach"
+msgstr "受信トレイ"
 
 #: ../src/scope/query.cpp:207
 msgid "All mail"
-msgstr "A h-uile post"
+msgstr "すべてのメール"
 
 #: ../src/scope/query.cpp:300
 msgid "From:"
-msgstr "O:"
+msgstr "From:"
 
 #: ../src/scope/query.cpp:303
 msgid "To:"
-msgstr "Gu:"
+msgstr "To:"
 
 #: ../src/scope/query.cpp:306
 msgid "Cc:"
@@ -79,49 +78,49 @@ msgstr "Cc:"
 
 #: ../src/scope/query.cpp:320
 msgid "More results..."
-msgstr "Barrachd thoraidhean..."
+msgstr ""
 
 #: ../src/scope/query.cpp:332
 msgid "Log in with Google"
-msgstr "Log a-steach le Google"
+msgstr ""
 
 #. / Header above buttons with following two strings
 #: ../src/scope/preview.cpp:51
 msgid "Find messages"
-msgstr "Lorg teachdaireachdan"
+msgstr ""
 
 #. / Argument is name or email address
 #: ../src/scope/preview.cpp:60
 #, c-format
 msgid "From %s"
-msgstr "O %s"
+msgstr "From %s"
 
 #: ../src/scope/preview.cpp:64
 msgid "In thread"
-msgstr "San t-sreath"
+msgstr ""
 
 #. / Argument is name or email address
 #: ../src/scope/preview.cpp:76
 #, c-format
 msgid "Reply to %s"
-msgstr "Freagair %s"
+msgstr ""
 
 #: ../src/scope/preview.cpp:82
 msgid "View in Gmail"
-msgstr "Seall ann an Gmail"
+msgstr ""
 
 #: ../src/scope/preview.cpp:107
 msgid "Mark as read"
-msgstr "Cuir comharra gun deach a leughadh"
+msgstr "既読にする"
 
 #: ../src/scope/preview.cpp:108
 msgid "Mark as unread"
-msgstr "Cuir comharra nach deach a leughadh"
+msgstr "未読にする"
 
 #: ../src/scope/preview.cpp:110
 msgid "Remove from trash"
-msgstr "Thoir air falbh on sgudal"
+msgstr ""
 
 #: ../src/scope/preview.cpp:111
 msgid "Move to trash"
-msgstr "Gluais dhan sgudal"
+msgstr "ゴミ箱に移動"
